@@ -1,32 +1,65 @@
 <template>
-  <div id="app">
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
-    </div>
-    <router-view/>
-  </div>
+  <v-app>
+    <v-app-bar
+      app
+      color="secondary"
+      dark
+    >
+      <div class="d-flex align-center">
+        <v-img
+          alt="DGTek Logo"
+          class="shrink mr-2"
+          contain
+          src="@/assets/logo.png"
+          transition="scale-transition"
+          width="50"
+        />
+
+        <v-btn
+          @click="goHome"
+          text
+        >
+          <span class="mr-2">Admin</span>
+        </v-btn>
+      </div>
+
+      <v-spacer></v-spacer>
+
+      <v-btn
+        href="https://dgtek.net/"
+        target="_blank"
+        text
+      >
+        <span class="mr-2">View result</span>
+        <v-icon>mdi-open-in-new</v-icon>
+      </v-btn>
+    </v-app-bar>
+
+    <v-content>
+      <router-view />
+    </v-content>
+  </v-app>
 </template>
 
-<style lang="scss">
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
+<script>
+
+export default {
+  name: 'App',
+
+  components: {
+    //
+  },
+
+  data: () => ({
+    //
+  }),
+  methods: {
+    goHome() {
+      this.$router.push({ path: '/' })
+    },
+  },
+  mounted() {
+    // this.$router.push({ path: 'home' })
+  },
 }
-
-#nav {
-  padding: 30px;
-
-  a {
-    font-weight: bold;
-    color: #2c3e50;
-
-    &.router-link-exact-active {
-      color: #42b983;
-    }
-  }
-}
-</style>
+</script>
