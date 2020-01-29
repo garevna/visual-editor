@@ -34,7 +34,6 @@ export default {
     route: '/',
     items: [
       { text: 'Blog content', icon: 'mdi-file', route: 'blog' },
-      { text: 'Blog articles', icon: 'mdi-file', route: 'articles' },
       { text: 'Blog news', icon: 'mdi-newspaper', route: 'news' },
       { text: 'Address list for map', icon: 'mdi-map-search', route: 'addresses' },
       { text: 'Polygons for map', icon: 'mdi-map-marker', route: 'polygons' },
