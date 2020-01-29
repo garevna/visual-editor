@@ -3,11 +3,11 @@
     <v-card flat class="pt-4" id="map" min-height="70vh">
     </v-card>
     <v-card flat class="pa-4 mx-auto" max-width="320px" >
-      <v-radio-group v-model="type" :mandatory="false">
+      <v-radio-group v-model="type">
         <v-radio label="Service available" value="ServiceAvailable" color="#A00E0D"></v-radio>
         <v-radio label="Build commenced" value="BuildCommenced"></v-radio>
       </v-radio-group>
-      <v-btn :disabled="!type ? true : false" color="success">Submit</v-btn>
+      <v-btn :disabled="!type ? true : false" color="success" @click="createPolygon">Submit</v-btn>
     </v-card>
   </v-container>
 </template>
@@ -22,6 +22,7 @@ export default {
     return {
       place: { lat: -37.87013628, lng: 144.963058 },
       type: '',
+      currentPolygonId: 0,
       polygons: [
       ],
     }
@@ -59,9 +60,6 @@ export default {
             fillColor: '#A00E0D',
             strokeColor: '#A00E0D',
             strokeWeight: 0.5,
-            // clickable: false,
-            // draggable: true,
-            geodesic: true,
             editable: true,
           }))
         } else {
@@ -72,33 +70,54 @@ export default {
             fillColor: '#000000',
             strokeColor: '#000000',
             strokeWeight: 0.5,
-            // clickable: false,
-            // draggable: true,
-            geodesic: true,
             editable: true,
           }))
         }
       })
 
-      // const geocoder = new window.google.maps.Geocoder()
-      // const searchButton = document.querySelector('#startSearch')
+      const drawingManager = new window.google.maps.drawing.DrawingManager({
 
-      // searchButton.onclick = () => {
-      //   const bounds = new window.google.maps.LatLngBounds()
-      //   const address = searchInput.value
-      //   geocoder.geocode({ address }, (results, status) => {
-      //     // eslint-disable-next-line eqeqeq
-      //     if (status == 'OK') {
-      //       checkAvail(results[0])
-      //       bounds.extend(results[0].geometry.location)
-      //       marker.setPosition(results[0].geometry.location)
-      //     } else {
-      //       this.$parent.toggleFail()
-      //     }
-      //     map.fitBounds(bounds)
-      //     map.setZoom(15)
-      //   })
-      // }
+        drawingControlOptions: {
+          position: window.google.maps.ControlPosition.BOTTOM_CENTER,
+          drawingModes: ['polygon'],
+        },
+        polygonOptions: {
+          fillColor: '#1B5E20',
+          strokeColor: '#1B5E20',
+          strokeWeight: 0.5,
+          editable: true,
+        },
+      })
+      drawingManager.setMap(map)
+
+      window.google.maps.event.addListener(drawingManager, 'polygoncomplete', (e) => {
+        const coordinates = e.getPath().getArray()
+        const coordArr = []
+        coordinates.forEach((elem) => {
+          coordArr.push([
+            elem.lng(),
+            elem.lat(),
+          ])
+        })
+        this.polygons = coordArr
+        // console.log(coordArr)
+      })
+    },
+
+    createPolygon() {
+      this.currentPolygonId = Date.now().toString()
+      const newPolygon = {
+        type: 'Feature',
+        properties: {
+          id: this.currentPolygonId,
+          typeOf: this.type,
+        },
+        geometry: {
+          type: 'Polygon',
+          coordinates: this.polygons,
+        },
+      }
+      console.log(newPolygon)
     },
   },
 
