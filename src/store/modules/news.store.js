@@ -2,8 +2,6 @@
 /* eslint-disable no-shadow */
 /* eslint-disable no-undef */
 
-import { setProperty, deleteProperty } from '@/js/setAndDeleteProperty'
-
 const state = {
   news: null,
   startTime: new Date().getTime(),

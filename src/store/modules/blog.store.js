@@ -2,8 +2,6 @@
 /* eslint-disable no-undef */
 /* eslint-disable no-shadow */
 
-import { setProperty, deleteProperty } from '@/js/setAndDeleteProperty'
-
 const state = {
   content: null,
   contentChanged: false,
