@@ -15,7 +15,7 @@ const getters = {
 
 const mutations = {
   UPDATE_NEWS: (state, news) => {
-    state.news = JSON.parse(JSON.stringify(news))
+    state.news = news
   },
 
   UPDATE_ARTICLE: (state, payload) => {
@@ -63,7 +63,7 @@ const actions = {
     return state.news[id]
   },
 
-  async SAVE_LOGO({ dispatch }, fileObject) {
+  async SAVE_LOGO({ getters, dispatch }, fileObject) {
     const fileName = `img${new Date().getTime()}.${fileObject.type.split('/')[1]}`
     const formData = new FormData()
     formData.set('logo', fileObject)

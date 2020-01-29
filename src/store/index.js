@@ -29,8 +29,6 @@ export default new Vuex.Store({
         error,
         time: new Date().getTime(),
       })
-
-      state[moduleName].errorLog = JSON.parse(JSON.stringify(error))
     },
     ERRORS_CLEAR: (state) => {
       state.errorsLog = []

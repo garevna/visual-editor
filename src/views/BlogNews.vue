@@ -1,11 +1,11 @@
 <template>
   <v-container>
       <v-navigation-drawer
-        app
-        permanent
-        expand-on-hover
+        absolute
+        temporary
         min-width="80"
         width="70%"
+        v-model="navigate"
       >
         <v-list v-if="keys">
           <v-subheader>
@@ -20,10 +20,13 @@
               :value="id"
             >
               <v-list-item-icon>
-                <v-icon color="success">{{ 'mdi-pencil' }}</v-icon>
+                <v-icon color="success">{{ 'mdi-link-box-variant' }}</v-icon>
               </v-list-item-icon>
               <v-list-item-content>
                 <v-list-item-title v-text="newsContent[id].title">
+                  <v-avatar v-if="newsContent[id].logo">
+                    <v-img :src="getLogo(id)" max-width="50"/>
+                  </v-avatar>
                 </v-list-item-title>
               </v-list-item-content>
 
@@ -31,7 +34,21 @@
           </v-list-item-group>
         </v-list>
       </v-navigation-drawer>
-      <NewsEditor v-if="article" :id="articleId" :sourceArticle="article"/>
+      <NewsEditor v-if="articleId && article" :id="articleId" :sourceArticle="article"/>
+
+      <v-bottom-navigation
+        v-model="bottomNav"
+        fixed
+        shift
+      >
+        <v-btn @click="navigate = true">
+          <v-icon large color="info">mdi-cards-variant</v-icon>
+        </v-btn>
+
+        <v-btn>
+          <v-icon color="secondary">mdi-image</v-icon>
+        </v-btn>
+    </v-bottom-navigation>
   </v-container>
 </template>
 
@@ -46,25 +63,35 @@ export default {
   },
 
   data: () => ({
-    newsContent: null,
-    keys: null,
     articleId: null,
     article: null,
+    bottomNav: 0,
+    navigate: false,
   }),
 
   computed: {
-
+    newsContent() {
+      return this.$store.state.news.news
+    },
+    keys() {
+      if (!this.newsContent) return null
+      return Object.keys(this.newsContent)
+    },
   },
 
   watch: {
     articleId(val) {
+      if (!val) return
       this.$store.dispatch('news/GET_ARTICLE_BY_ID', val)
         .then((response) => { this.article = response })
+      this.navigate = false
     },
   },
 
   methods: {
-
+    getLogo(id) {
+      return `${this.$store.getters['news/logosEndpoint']}/${this.newsContent[id].logo}`
+    },
     async newArticle() {
       const id = new Date().getTime().toString()
 
@@ -77,7 +104,7 @@ export default {
       })
 
       this.$store.commit('news/UPDATE_ARTICLE')
-
+      this.saveNewsContent()
       this.articleId = id
     },
 
@@ -85,18 +112,21 @@ export default {
       this.removePopupShow = true
     },
 
-    async init() {
-      this.newsContent = await this.$store.dispatch('news/GET_NEWS')
-      this.keys = Object.keys(this.newsContent)
+    saveNewsContent() {
+      this.$store.dispatch('news/SAVE_NEWS', this.newsContent)
+        .then(
+          () => {},
+          err => this.$store.dispatch('ERROR_HANDLER', err),
+        )
     },
 
   },
   updated() {
-    // this.init()
+    //
   },
 
   mounted() {
-    this.init()
+    this.$store.dispatch('news/GET_NEWS')
   },
 }
 </script>

@@ -251,13 +251,13 @@ export default {
     async savePicture() {
       try {
         return await this.$store.dispatch('blog/SAVE_PICTURE', this.picture.file)
-      } catch (err) { return this.traceError(err) }
+      } catch (err) { return '' }
     },
 
     async saveAvatar() {
       try {
         return await this.$store.dispatch('blog/SAVE_AVATAR', this.avatar.file)
-      } catch (err) { return this.traceError(err) }
+      } catch (err) { return '' }
     },
 
     uploadImageFile(param) {
@@ -304,7 +304,6 @@ export default {
       }
       this.saveContent(this.content.text)
 
-      this.$store.commit('SET_PROPERTY', { object: this.content, propertyName: this.id, value: this.article })
       this.$store.dispatch('blog/SAVE_CONTENT')
     },
 
@@ -314,7 +313,7 @@ export default {
         propertyName: this.id,
       })
       await this.$store.dispatch('blog/SAVE_CONTENT')
-      //
+
       this.close = true
     },
   },
