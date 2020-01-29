@@ -9,19 +9,19 @@
 </template>
 
 <script>
-export default {
-  data: () => ({
-    files: null,
-    currentFile: '',
-    container: null,
-    content: null,
-  }),
-  computed: {
+// export default {
+//   data: () => ({
+//     files: null,
+//     currentFile: '',
+//     container: null,
+//     content: null,
+//   }),
+//   computed: {
 
-  },
-  mounted() {
-    this.$store.dispatch('blog/GET_BLOG_CONTENT')
-      .then((response) => { this.content = response })
-  },
-}
+//   },
+//   mounted() {
+//     this.$store.dispatch('blog/GET_BLOG_CONTENT')
+//       .then((response) => { this.content = response })
+//   },
+// }
 </script>
