@@ -44,6 +44,28 @@ export default new Vuex.Store({
 
   actions: {
 
+    async REMOVE_FILE({ dispatch }, { moduleName, filePath }) {
+      if (!filePath) {
+        dispatch(
+          'TRACE_ERROR',
+          {
+            moduleName: 'blog',
+            error: `Error deleting the file: ${filePath}`,
+          },
+          { root: true },
+        )
+        return false
+      }
+      try {
+        await fetch(filePath, { method: 'DELETE' })
+        return true
+      } catch (error) {
+        dispatch('TRACE_ERROR', { moduleName, error })
+        return false
+      }
+    },
+
+
     TRACE_ERROR({ state, getters, commit }, { moduleName, error }) {
       commit('ERROR_HANDLER', { moduleName, error })
       if (new Date().getTime() - state.startTime > 360000) {
@@ -62,6 +84,8 @@ export default new Vuex.Store({
           }),
         )
       }
+      /* eslint-disable-next-line */
+      console.warn(state.errorsLog)
     },
   },
 })

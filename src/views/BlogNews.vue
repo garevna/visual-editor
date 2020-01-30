@@ -98,7 +98,7 @@ export default {
       this.$set(this.newsContent, id, {
         title: 'DGTek in media...',
         source: '',
-        data: new Date().toLocaleDateString(),
+        date: new Date().toLocaleDateString(),
         logo: '',
         ref: '',
       })

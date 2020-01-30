@@ -27,6 +27,30 @@ const actions = {
     commit('MAP_POLYGONS', polygons)
     return true
   },
+  async SAVE_POLYGONS({ getters, commit }, polygons) {
+    const response = await fetch(getters.polygonsEndpoint, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(polygons),
+    })
+    /* eslint-disable-next-line */
+    console.log(response)
+    return response
+  },
+  async SAVE_POINTS({ getters, commit }, points) {
+    const response = await fetch(getters.pointsEndpoint, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(points),
+    })
+    /* eslint-disable-next-line */
+    console.log(response)
+    return response
+  },
 }
 
 export default {
