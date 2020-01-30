@@ -308,13 +308,7 @@ export default {
     },
 
     async removeArticle() {
-      this.$store.commit('DELETE_PROPERTY', {
-        object: this.$store.state.blog.content,
-        propertyName: this.id,
-      })
-      await this.$store.dispatch('blog/SAVE_CONTENT')
-
-      this.close = true
+      this.close = await this.$store.dispatch('blog/REMOVE_ARTICLE', this.id)
     },
   },
 

@@ -36,28 +36,37 @@ const actions = {
     return result
   },
 
-  REMOVE_ARTICLE({ state, commit }, id) {
-    commit('DELETE_PROPERTY', {
-      moduleName: 'blog',
-      object: state.content,
-      propertyName: id,
-    }, { root: true })
-  },
-
-  async REMOVE_FILE({
+  async REMOVE_ARTICLE({
     state,
     getters,
     commit,
     dispatch,
-  }, file) {
-    const selected = state.content.find(item => item.file === file)
-    if (!selected) return
-    commit('UPDATE_CONTENT', state.content.filter(item => item.file !== file))
+  }, id) {
+    /* eslint-disable camelcase */
+    const { file, picture, author_ava } = state.content[id]
+
+    if (file) await dispatch('REMOVE_FILE', `${getters.contentEndpoint}/${file}`)
+    if (picture) await dispatch('REMOVE_FILE', `${getters.imagesEndpoint}/${picture}`)
+    if (author_ava) await dispatch('REMOVE_FILE', `${getters.avatarsEndpoint}/${author_ava}`)
+
+    commit('DELETE_PROPERTY', {
+      object: state.content,
+      propertyName: id,
+    }, { root: true })
+
     await dispatch('SAVE_CONTENT')
-      .catch(error => dispatch('TRACE_ERROR', error, { root: true }))
-    fetch(`${getters.contentEndpoint}/${file}`, {
-      method: 'DELETE',
-    })
+    return true
+  },
+
+  async REMOVE_FILE({ dispatch }, filePath) {
+    await dispatch(
+      'REMOVE_FILE',
+      {
+        moduleName: 'blog',
+        filePath,
+      },
+      { root: true },
+    )
   },
 
   async GET_CONTENT({
