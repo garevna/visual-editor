@@ -1,0 +1,36 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "1580403679633",
+        "typeOf": "ServiceAvailable"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [144.90829802075194, -37.89746404140467],
+            [144.87499571362304, -37.93186282059649],
+            [144.9391970686035, -37.93077963983115]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "id": "1580403694522", "typeOf": "ServiceAvailable" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [144.88014555493163, -37.941881486078636],
+            [144.87980223217772, -37.9535230842178],
+            [144.9052081159668, -37.951898785910544]
+          ]
+        ]
+      }
+    }
+  ]
+}
