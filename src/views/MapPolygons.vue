@@ -2,13 +2,19 @@
   <v-container>
     <v-card flat class="pt-4" id="map" min-height="70vh">
     </v-card>
-    <v-card flat class="pa-4 mx-auto" max-width="320px" >
-      <v-radio-group v-model="type">
-        <v-radio label="Service available" value="ServiceAvailable" color="#A00E0D"></v-radio>
-        <v-radio label="Build commenced" value="BuildCommenced"></v-radio>
-      </v-radio-group>
-      <v-btn :disabled="!type ? true : false" color="success" @click="createPolygon">Submit</v-btn>
-    </v-card>
+    <v-row class="justify-space-around align-end">
+      <v-card flat class="pa-4" max-width="220px">
+        <v-radio-group v-model="addPolygonType">
+          <v-radio label="Service available" value="ServiceAvailable" color="#A00E0D" />
+          <v-radio label="Build commenced" value="BuildCommenced"/>
+        </v-radio-group>
+        <v-btn :disabled="!(addingPolygonId && addPolygonType)" color="success" @click="createPolygon" width="100%">Add polygon</v-btn>
+      </v-card>
+      <v-card flat class="pa-4" max-width="220px">
+        <v-checkbox v-model="deleteActivated" label="Activate delete mode" value="active" />
+        <v-btn :disabled="!(deleteActivated)" color="error" width="100%">Delete polygon</v-btn>
+      </v-card>
+    </v-row>
   </v-container>
 </template>
 
@@ -21,10 +27,13 @@ export default {
   data() {
     return {
       place: { lat: -37.87013628, lng: 144.963058 },
-      type: '',
-      currentPolygonId: 0,
-      polygons: [
-      ],
+      addPolygonType: '',
+      deleteActivated: '',
+      addingPolygonId: 0,
+      serverPolygons: [],
+      addPolygons: [],
+      deletePolygons: [],
+      currentPolygons: [],
     }
   },
 
@@ -47,6 +56,23 @@ export default {
       const state = new window.google.maps.Data()
       state.loadGeoJson(this.endpoint)
 
+      const addListenersOnPolygon = (polygon) => {
+        window.google.maps.event.addListener(polygon, 'click', () => {
+          if (this.deleteActivated) {
+            const coordinates = polygon.getPath().getArray()
+            const coordArr = []
+            coordinates.forEach((elem) => {
+              coordArr.push([
+                elem.lng(),
+                elem.lat(),
+              ])
+            })
+            console.log(polygon)
+            console.log(this.serverPolygons)
+          }
+        })
+      }
+
       let avail = null
       const availPoly = []
       let build = null
@@ -54,26 +80,42 @@ export default {
       state.addListener('addfeature', (e) => {
         if (e.feature.getProperty('typeOf') === 'ServiceAvailable') {
           avail = e.feature.getGeometry()
-          availPoly.push(new window.google.maps.Polygon({
-            paths: avail.getAt(0).getArray(),
+          const paths = avail.getAt(0).getArray()
+          console.log(paths)
+          const currentPath = paths.map(elem => [elem.lng(), elem.lat()])
+          this.serverPolygons.push(currentPath)
+          const p = new window.google.maps.Polygon({
+            paths,
             map,
             fillColor: '#A00E0D',
             strokeColor: '#A00E0D',
             strokeWeight: 0.5,
             editable: true,
-          }))
+            clickable: true,
+          })
+          addListenersOnPolygon(p)
+          availPoly.push(p)
         } else {
           build = e.feature.getGeometry()
-          buildPoly.push(new window.google.maps.Polygon({
+          const p = new window.google.maps.Polygon({
             paths: build.getAt(0).getArray(),
             map,
             fillColor: '#000000',
             strokeColor: '#000000',
             strokeWeight: 0.5,
             editable: true,
-          }))
+          })
+          addListenersOnPolygon(p)
+          buildPoly.push(p)
         }
       })
+
+      availPoly.forEach((polygon) => {
+        window.google.maps.event.addListener(polygon, 'click', () => {
+          alert(this.indexID)
+        })
+      })
+
 
       const drawingManager = new window.google.maps.drawing.DrawingManager({
 
@@ -99,25 +141,24 @@ export default {
             elem.lat(),
           ])
         })
-        this.polygons = coordArr
-        // console.log(coordArr)
+        this.addPolygons = coordArr
+        this.addingPolygonId = Date.now().toString()
       })
     },
 
     createPolygon() {
-      this.currentPolygonId = Date.now().toString()
       const newPolygon = {
         type: 'Feature',
         properties: {
-          id: this.currentPolygonId,
-          typeOf: this.type,
+          id: this.addingPolygonId,
+          typeOf: this.addPolygonType,
         },
         geometry: {
           type: 'Polygon',
-          coordinates: this.polygons,
+          coordinates: [this.addPolygons],
         },
       }
-      console.log(newPolygon)
+      console.log(JSON.stringify(newPolygon))
     },
   },
 
