@@ -5,36 +5,84 @@
     <v-row class="justify-space-around align-end">
 
       <v-card flat class="pa-4" max-width="220px">
-        <v-btn :disabled="!!deleteActivated || !!editActivated" @click="createDrawingClass" width="100%" class="mb-4" color="info">
+        <v-btn width="100%" class="mb-4" color="info" :disabled="!!deleteActivated || !!editActivated" @click="createDrawingClass">
           {{addActivated ? "Deactivate add mode" : "Activate add mode"}}
         </v-btn>
         <v-radio-group v-if="addActivated" v-model="addPolygonType">
           <v-radio label="Service available" value="ServiceAvailable" color="#A00E0D" />
           <v-radio label="Build commenced" value="BuildCommenced"/>
         </v-radio-group>
-        <v-btn :disabled="!(addingPolygonId && addPolygonType)" color="success" @click="createPolygon" width="100%">Add polygon</v-btn>
+        <v-btn width="100%" color="success" :disabled="!(addingPolygonId && addPolygonType)" @click="createPolygon">Add polygon</v-btn>
       </v-card>
 
       <v-card flat class="pa-4" max-width="220px">
-        <v-checkbox v-model="editActivated" label="Activate edit mode" value="active" :disabled="!!deleteActivated || addActivated" />
-        <v-btn :disabled="!(editActivated)" color="warning" width="100%" @click="editPolygon">Edit polygon</v-btn>
+        <v-checkbox label="Activate edit mode" value="active" v-model="editActivated" :disabled="!!deleteActivated || addActivated" />
+        <v-btn width="100%" color="warning" :disabled="!(editActivated)" @click="editPolygon">Edit polygon</v-btn>
       </v-card>
 
       <v-card flat class="pa-4" max-width="220px">
-        <v-checkbox v-model="deleteActivated" label="Activate delete mode" value="active" :disabled="!!editActivated || addActivated" />
-        <v-btn :disabled="!(deleteActivated)" color="error" width="100%" @click="deletePolygon">Delete polygon</v-btn>
+        <v-checkbox label="Activate delete mode" value="active" v-model="deleteActivated" :disabled="!!editActivated || addActivated" />
+        <v-btn width="100%" color="error" :disabled="!(deleteActivated)" @click="deletePolygon">Delete polygon</v-btn>
       </v-card>
 
       <v-card flat class="pa-4" max-width="220px">
-        <v-btn :disabled="addActivated || !!editActivated || !!deleteActivated || checkApplyButton()" width="100%" color="accent" @click="applyChanges">Apply changes</v-btn>
+        <v-btn width="100%" class="mb-4" @click="showInfo">{{infoShown ? "Close info" : "Show info"}}</v-btn>
+        <v-btn width="100%" color="accent" :disabled="addActivated || !!editActivated || !!deleteActivated || checkApplyButton()" @click="applyChanges">Apply changes</v-btn>
         <!-- <v-btn width="100%" color="accent" @click="applyChanges">Apply changes</v-btn> -->
       </v-card>
 
       <!-- <v-card flat class="pa-4" max-width="220px">
         <v-btn  width="100%" @click="showData">Show state data</v-btn>
       </v-card> -->
-
     </v-row>
+    <v-card-text class='pa-4' v-if="infoShown">
+      <h1 class="mb-4">How it works</h1>
+      <h3>Important notes</h3>
+      <p>При выборе любого из режимов (добавление, редактирование, удаление) остальные режимы будут недоступны, пока не завершится текущее действие!</p>
+      <p class="mb-8">Также кнопка "APPLY CHANGES" не будет активна, если не было произведено никаких изменений (состояние данных на сервере соответсвует текущему, отрисованному на карте).</p>
+      <ol>
+        <li class="mb-8">
+          <h3 class="mb-2">Adding polygon</h3>
+          <p>Нажмите кнопку "ACTIVATE ADD MODE".</p>
+          <p>Появятся два радиобаттона "Service available" и "Build commenced", также появится окно с выбором инструмента для рисования (левый нижний угол карты).</p>
+          <p>Отметьте нужный радиобаттон, выберите инструмент рисования полигонов (значок полигона справа от значка руки). При наведении на карту курсор должен поменять свой вид на перекрестие.</p>
+          <p>Далее начните рисование (клик левой кнопкой мыши поставит вершину полигона).<b> Обратите внимание, что полигон должен быть замкнутым,</b> об этом будет свидетельствовать появление зеленого цвета заливки полигона.</p>
+          <p>Когда полигон был успешно отрисован, нажмите кнопку "ADD POLYGON". Кнопка будет доступна только в случае если полигон замкнут и отмечен один из чекбоксов с типом полигона ("Service Available" or "Build Commenced").</p>
+          <p><b class="mb-5">После отрисовки полигона обязательно нажмите кнопку "ADD POLYGON", и только потом переходите к рисованию следующего!</b></p>
+          <p>После нажатия кнопки "ADD POLYGON" добавленный полигон поменяет цвет заливки на цвет соответсвующий его типу.</p>
+          <p>Для выхода из режима редактирования нажмите кнопку "DEACTIVATE ADD MODE". После нажатия обратите внимание, что кнопка "APPLY CHANGES" стала доступна для нажатия</p>
+        </li>
+        <li class="mb-8">
+          <h3 class="mb-2">Editing polygon</h3>
+          <p>Поставьте галочку "Activate edit mode".</p>
+          <p>Нажамите на полигоне который хотите отредактировать левой кнопкой мыши. Цвет заливки полигона станет оранжевым, станут активными вершины и средние точки сторон.</p>
+          <p>Нажмите на активной доступной для редактирования точке и перетащите ее в нужном направлении, удерживая левую кнопку мыши нажатой.</p>
+          <p>Если полигон был выбран для редактирования по ошибке, нажатие на нем правой кнопкой мыши позволит отменить редактирование.<b> Обратите внимание</b> - если были сделаны изменения в текущем полигоне, а после была нажата правая кнопка мыши - изменения не сохраняются для отправки на сервер, но остаются отрисованными на карте до следующего обновления данных на сервере.</p>
+          <p>После того как полигон отредактирован нажмите кнопку "EDIT POLYGON", чтобы применить изменения.</p>
+          <p><b>Также обратите внимание</b>, что можно редактировать только один полигон одновременно.</p>
+          <p><b class="mb-5">Для применения изменений геометрии полигона обязательно нажмите кнопку "EDIT POLYGON", и только потом переходите к редактированию следующего!</b></p>
+          <p>Обратите внимание, что кнопка "APPLY CHANGES" стала доступна для нажатия</p>
+        </li>
+        <li class="mb-8">
+          <h3 class="mb-2">Deleting polygon</h3>
+          <p>Поставьте галочку "Activate delete mode".</p>
+          <p>Нажамите на полигоне который хотите удалить левой кнопкой мыши, цвет заливки полигона станет красным.</p>
+          <p>Если полигон был выбран для удаления по ошибке, нажатие на нем правой кнопкой мыши позволит отменить выделение.</p>
+          <p>После того как полигон выбран нажмите кнопку "DELETE POLYGON", и выбранный полигон перестанет отображаться на карте.</p>
+          <p><b>Также обратите внимание</b>, что для удаления можно выбрать только один полигон одновременно.</p>
+          <p><b>После выбора полигона обязательно нажмите кнопку "DELETE POLYGON", и только потом переходите к выбору следующего!</b></p>
+          <p>Обратите внимание, что кнопка "APPLY CHANGES" стала доступна для нажатия</p>
+        </li>
+        <li class="mb-8">
+          <h3 class="mb-2">Applying changes</h3>
+          <p>После того, как были сделаны все необходимые изменения, кнопка "APPLY CHANGES" станет доступной для нажатия.</p>
+          <p><b>Обратите внимание</b>, что кнопка "APPLY CHANGES" активна только в случае, когда не активны режимы редактирования и были внесены какие-то изменения в геометрию полигонов.</p>
+          <p><b>При нажатии "APPLY CHANGES" внесенные изменения будут отправленны на сервер</b></p>
+          <p>Процесс отправки данных занимает какое-то время, на время загрузки поле карты будет недоступно.</p>
+          <p>После успешной отправки данных будет снова отображена карта с актуальной версией полигонов с сервера.</p>
+        </li>
+      </ol>
+    </v-card-text>
   </v-container>
 </template>
 
@@ -48,6 +96,8 @@ import mapConfigs from '@/configs/map'
 export default {
   data() {
     return {
+      infoShown: false,
+
       place: { lat: -37.85701362, lng: 144.963058 },
 
       map: null,
@@ -112,6 +162,10 @@ export default {
     //   console.log(this.checkApplyButton())
     //   console.log('---------------------------------------------')
     // },
+
+    showInfo() {
+      this.infoShown = !this.infoShown
+    },
 
     checkApplyButton() {
       return (JSON.stringify(this.serverPolygonsAvailable) === JSON.stringify(this.initialServerPolygonsAvailable) && JSON.stringify(this.serverPolygonsCommenced) === JSON.stringify(this.initialServerPolygonsCommenced))
@@ -249,14 +303,13 @@ export default {
       if (this.addActivated) {
         const drawingManager = new window.google.maps.drawing.DrawingManager({
           drawingControlOptions: {
-            position: window.google.maps.ControlPosition.BOTTOM_CENTER,
+            position: window.google.maps.ControlPosition.BOTTOM_LEFT,
             drawingModes: ['polygon'],
           },
           polygonOptions: {
             fillColor: '#1B5E20',
             strokeColor: '#1B5E20',
             strokeWeight: 0.5,
-            editable: true,
           },
         })
         this.drawing = drawingManager
@@ -356,7 +409,7 @@ export default {
       }
     },
 
-    applyChanges() {
+    async applyChanges() {
       // this.structureToSend.features
       const availArr = Object.keys(this.serverPolygonsAvailable).map(id => ({
         type: 'Feature',
@@ -385,7 +438,32 @@ export default {
         type: 'FeatureCollection',
         features: [...availArr, ...commencedArr],
       }
-      this.$store.dispatch('map/SAVE_POLYGONS', structureToSend)
+      document.querySelector('#map').innerHTML = '<p style="text-align: center; margin-top: 50px;">Loading...</p>'
+
+      this.drawing = null
+      this.addActivated = false
+      this.editActivated = ''
+      this.deleteActivated = ''
+      this.addPolygonType = ''
+      this.addingPolygonId = 0
+      this.addingPolygon = []
+      this.addedPolygonBuffer = null
+      this.editedPolygonAvail = {}
+      this.editedPolygonCommenced = {}
+      this.editedPolygonId = ''
+      this.editedPolygonBufferAvail = null
+      this.editedPolygonBufferCommenced = null
+      this.deletedPolygonAvail = ''
+      this.deletedPolygonCommenced = ''
+      this.deletedPolygonBufferAvail = null
+      this.deletedPolygonBufferCommenced = null
+      this.serverPolygonsAvailable = {}
+      this.serverPolygonsCommenced = {}
+      this.initialServerPolygonsAvailable = {}
+      this.initialServerPolygonsCommenced = {}
+
+      await this.$store.dispatch('map/SAVE_POLYGONS', structureToSend)
+      this.initMap()
     },
   },
 
