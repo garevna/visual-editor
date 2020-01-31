@@ -5,7 +5,7 @@
     <v-row class="justify-space-around align-end">
 
       <v-card flat class="pa-4" max-width="220px">
-        <v-btn :disabled="!!deleteActivated || !!editActivated" @click="createDrawingClass" width="100%" class="mb-4" color="info" >
+        <v-btn :disabled="!!deleteActivated || !!editActivated" @click="createDrawingClass" width="100%" class="mb-4" color="info">
           {{addActivated ? "Deactivate add mode" : "Activate add mode"}}
         </v-btn>
         <v-radio-group v-if="addActivated" v-model="addPolygonType">
@@ -26,7 +26,8 @@
       </v-card>
 
       <v-card flat class="pa-4" max-width="220px">
-        <v-btn :disabled="addActivated || !!editActivated || !!deleteActivated || checkApplyButton()" width="100%" color="accent">Apply changes</v-btn>
+        <!-- <v-btn :disabled="addActivated || !!editActivated || !!deleteActivated || checkApplyButton()" width="100%" color="accent" @click="applyChanges">Apply changes</v-btn> -->
+        <v-btn width="100%" color="accent" @click="applyChanges">Apply changes</v-btn>
       </v-card>
 
       <v-card flat class="pa-4" max-width="220px">
@@ -39,6 +40,7 @@
 
 <script>
 /* eslint-disable no-console */
+/* eslint-disable no-unused-vars */
 
 import { mapGetters } from 'vuex'
 
@@ -79,11 +81,6 @@ export default {
 
       initialServerPolygonsAvailable: {},
       initialServerPolygonsCommenced: {},
-
-      structureToSend: {
-        type: 'FeatureCollection',
-        features: [],
-      },
     }
   },
 
@@ -138,14 +135,11 @@ export default {
             editable: true,
           })
           this.editedPolygonId = id
-          console.log('1')
           console.log(typeOf === 'ServiceAvailable' && JSON.stringify(coordArr) !== JSON.stringify(this.serverPolygonsAvailable[id]))
           if (typeOf === 'ServiceAvailable' && JSON.stringify(coordArr) !== JSON.stringify(this.serverPolygonsAvailable[id])) {
-            console.log('fired 1')
             this.editedPolygonAvail[id] = coordArr
             this.editedPolygonBufferAvail = polygon
           } else if (typeOf === 'BuildCommenced' && JSON.stringify(coordArr) !== JSON.stringify(this.serverPolygonsCommenced[id])) {
-            console.log('fired 2')
             this.editedPolygonCommenced[id] = coordArr
             this.editedPolygonBufferCommenced = polygon
           }
@@ -270,7 +264,6 @@ export default {
         this.drawing = drawingManager
         this.drawing.setMap(this.map)
         window.google.maps.event.addListener(drawingManager, 'polygoncomplete', (e) => {
-          // console.log(e)
           const coordinates = e.getPath().getArray()
           const coordArr = []
           coordinates.forEach((elem) => {
@@ -365,12 +358,41 @@ export default {
       }
     },
 
-    applyChanges() {},
+    applyChanges() {
+      // this.structureToSend.features
+      const availArr = Object.keys(this.serverPolygonsAvailable).map(id => ({
+        type: 'Feature',
+        properties: {
+          id,
+          typeOf: 'ServiceAvailable',
+        },
+        geometry: {
+          type: 'Polygon',
+          coordinates: [[...this.serverPolygonsAvailable[id][0], this.serverPolygonsAvailable[id][0][0]]],
+        },
+      }))
+      const commencedArr = Object.keys(this.serverPolygonsCommenced).map(id => ({
+        type: 'Feature',
+        properties: {
+          id,
+          typeOf: 'ServiceAvailable',
+        },
+        geometry: {
+          type: 'Polygon',
+          coordinates: [[...this.serverPolygonsCommenced[id][0], this.serverPolygonsCommenced[id][0][0]]],
+        },
+      }))
+
+      const structureToSend = {
+        type: 'FeatureCollection',
+        features: [...availArr, ...commencedArr],
+      }
+      this.$store.dispatch('map/SAVE_POLYGONS', structureToSend)
+    },
   },
 
   mounted() {
     this.initMap()
-    // this.$store.dispatch('SAVE_POLYGONS', data)
   },
 }
 </script>
