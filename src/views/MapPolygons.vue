@@ -26,13 +26,13 @@
       </v-card>
 
       <v-card flat class="pa-4" max-width="220px">
-        <!-- <v-btn :disabled="addActivated || !!editActivated || !!deleteActivated || checkApplyButton()" width="100%" color="accent" @click="applyChanges">Apply changes</v-btn> -->
-        <v-btn width="100%" color="accent" @click="applyChanges">Apply changes</v-btn>
+        <v-btn :disabled="addActivated || !!editActivated || !!deleteActivated || checkApplyButton()" width="100%" color="accent" @click="applyChanges">Apply changes</v-btn>
+        <!-- <v-btn width="100%" color="accent" @click="applyChanges">Apply changes</v-btn> -->
       </v-card>
 
-      <v-card flat class="pa-4" max-width="220px">
+      <!-- <v-card flat class="pa-4" max-width="220px">
         <v-btn  width="100%" @click="showData">Show state data</v-btn>
-      </v-card>
+      </v-card> -->
 
     </v-row>
   </v-container>
@@ -40,7 +40,6 @@
 
 <script>
 /* eslint-disable no-console */
-/* eslint-disable no-unused-vars */
 
 import { mapGetters } from 'vuex'
 
@@ -91,28 +90,28 @@ export default {
   },
 
   methods: {
-    showData() {
-      console.log('%c addPolygonType: ', this.addPolygonType)
-      console.log('%c addingPolygonId: ', this.addingPolygonId)
-      console.log('%c addingPolygon: ', this.addingPolygon)
-      console.log('%c addedPolygonBuffer: ', 'color: green; font-weight: bold;', this.addedPolygonBuffer)
-      console.log('%c editedPolygonAvail: ', 'color: #FF6F00;', this.editedPolygonAvail)
-      console.log('%c editedPolygonCommenced: ', 'color: #FF6F00;', this.editedPolygonCommenced)
-      console.log('%c editedPolygonId: ', 'color: #FF6;', this.editedPolygonId)
-      console.log('%c editedPolygonBufferAvail: ', 'color: #FF6F00; font-weight: bold;', this.editedPolygonBufferAvail)
-      console.log('%c editedPolygonBufferCommenced: ', 'color: #FF6F00; font-weight: bold;', this.editedPolygonBufferCommenced)
-      console.log('%c deletedPolygonAvail: ', 'color: #D32F2F;', this.deletedPolygonAvail)
-      console.log('%c deletedPolygonCommenced: ', 'color: #D32F2F;', this.deletedPolygonCommenced)
-      console.log('%c deletedPolygonBufferAvail: ', 'color: #D32F2F; font-weight: bold;', this.deletedPolygonBufferAvail)
-      console.log('%c deletedPolygonBufferCommenced: ', 'color: #D32F2F; font-weight: bold;', this.deletedPolygonBufferCommenced)
-      console.log('%c serverPolygonsAvailable: ', 'color: #09b; font-weight: bold;', this.serverPolygonsAvailable)
-      console.log('%c serverPolygonsCommenced: ', 'color: #09b; font-weight: bold;', this.serverPolygonsCommenced)
-      console.log('%c initialServerPolygonsAvailable: ', 'color: #09b; font-weight: bold;', this.initialServerPolygonsAvailable)
-      console.log('%c initialServerPolygonsCommenced: ', 'color: #09b; font-weight: bold;', this.initialServerPolygonsCommenced)
-      console.log('%c compared states: ', 'color: red; font-weight: bold;', JSON.stringify(this.serverPolygonsAvailable) === JSON.stringify(this.initialServerPolygonsAvailable))
-      console.log(this.checkApplyButton())
-      console.log('---------------------------------------------')
-    },
+    // showData() {
+    //   console.log('%c addPolygonType: ', this.addPolygonType)
+    //   console.log('%c addingPolygonId: ', this.addingPolygonId)
+    //   console.log('%c addingPolygon: ', this.addingPolygon)
+    //   console.log('%c addedPolygonBuffer: ', 'color: green; font-weight: bold;', this.addedPolygonBuffer)
+    //   console.log('%c editedPolygonAvail: ', 'color: #FF6F00;', this.editedPolygonAvail)
+    //   console.log('%c editedPolygonCommenced: ', 'color: #FF6F00;', this.editedPolygonCommenced)
+    //   console.log('%c editedPolygonId: ', 'color: #FF6;', this.editedPolygonId)
+    //   console.log('%c editedPolygonBufferAvail: ', 'color: #FF6F00; font-weight: bold;', this.editedPolygonBufferAvail)
+    //   console.log('%c editedPolygonBufferCommenced: ', 'color: #FF6F00; font-weight: bold;', this.editedPolygonBufferCommenced)
+    //   console.log('%c deletedPolygonAvail: ', 'color: #D32F2F;', this.deletedPolygonAvail)
+    //   console.log('%c deletedPolygonCommenced: ', 'color: #D32F2F;', this.deletedPolygonCommenced)
+    //   console.log('%c deletedPolygonBufferAvail: ', 'color: #D32F2F; font-weight: bold;', this.deletedPolygonBufferAvail)
+    //   console.log('%c deletedPolygonBufferCommenced: ', 'color: #D32F2F; font-weight: bold;', this.deletedPolygonBufferCommenced)
+    //   console.log('%c serverPolygonsAvailable: ', 'color: #09b; font-weight: bold;', this.serverPolygonsAvailable)
+    //   console.log('%c serverPolygonsCommenced: ', 'color: #09b; font-weight: bold;', this.serverPolygonsCommenced)
+    //   console.log('%c initialServerPolygonsAvailable: ', 'color: #09b; font-weight: bold;', this.initialServerPolygonsAvailable)
+    //   console.log('%c initialServerPolygonsCommenced: ', 'color: #09b; font-weight: bold;', this.initialServerPolygonsCommenced)
+    //   console.log('%c compared states: ', 'color: red; font-weight: bold;', JSON.stringify(this.serverPolygonsAvailable) === JSON.stringify(this.initialServerPolygonsAvailable))
+    //   console.log(this.checkApplyButton())
+    //   console.log('---------------------------------------------')
+    // },
 
     checkApplyButton() {
       return (JSON.stringify(this.serverPolygonsAvailable) === JSON.stringify(this.initialServerPolygonsAvailable) && JSON.stringify(this.serverPolygonsCommenced) === JSON.stringify(this.initialServerPolygonsCommenced))
@@ -135,7 +134,6 @@ export default {
             editable: true,
           })
           this.editedPolygonId = id
-          console.log(typeOf === 'ServiceAvailable' && JSON.stringify(coordArr) !== JSON.stringify(this.serverPolygonsAvailable[id]))
           if (typeOf === 'ServiceAvailable' && JSON.stringify(coordArr) !== JSON.stringify(this.serverPolygonsAvailable[id])) {
             this.editedPolygonAvail[id] = coordArr
             this.editedPolygonBufferAvail = polygon
@@ -291,7 +289,7 @@ export default {
           strokeColor: '#A00E0D',
           editable: false,
         })
-        this.serverPolygonsAvailable[this.addingPolygonId] = [this.addPolygon]
+        this.serverPolygonsAvailable[this.addingPolygonId] = this.addPolygon
         this.addPolygonType = ''
         this.addingPolygonId = 0
       } else if (this.addPolygonType === 'BuildCommenced') {
@@ -300,7 +298,7 @@ export default {
           strokeColor: '#000000',
           editable: false,
         })
-        this.serverPolygonsCommenced[this.addingPolygonId] = [this.addPolygon]
+        this.serverPolygonsCommenced[this.addingPolygonId] = this.addPolygon
         this.addPolygonType = ''
         this.addingPolygonId = 0
       }
@@ -368,18 +366,18 @@ export default {
         },
         geometry: {
           type: 'Polygon',
-          coordinates: [[...this.serverPolygonsAvailable[id][0], this.serverPolygonsAvailable[id][0][0]]],
+          coordinates: [[...this.serverPolygonsAvailable[id], this.serverPolygonsAvailable[id][0]]],
         },
       }))
       const commencedArr = Object.keys(this.serverPolygonsCommenced).map(id => ({
         type: 'Feature',
         properties: {
           id,
-          typeOf: 'ServiceAvailable',
+          typeOf: 'BuildCommenced',
         },
         geometry: {
           type: 'Polygon',
-          coordinates: [[...this.serverPolygonsCommenced[id][0], this.serverPolygonsCommenced[id][0][0]]],
+          coordinates: [[...this.serverPolygonsCommenced[id], this.serverPolygonsCommenced[id][0]]],
         },
       }))
 
