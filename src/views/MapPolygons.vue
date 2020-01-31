@@ -26,7 +26,7 @@
       </v-card>
 
       <v-card flat class="pa-4" max-width="220px">
-        <v-btn :disabled="addActivated || !!editActivated || !!deleteActivated" width="100%" color="accent">Apply changes</v-btn>
+        <v-btn :disabled="addActivated || !!editActivated || !!deleteActivated || checkApplyButton()" width="100%" color="accent">Apply changes</v-btn>
       </v-card>
 
       <v-card flat class="pa-4" max-width="220px">
@@ -77,6 +77,9 @@ export default {
       serverPolygonsAvailable: {},
       serverPolygonsCommenced: {},
 
+      initialServerPolygonsAvailable: {},
+      initialServerPolygonsCommenced: {},
+
       structureToSend: {
         type: 'FeatureCollection',
         features: [],
@@ -88,32 +91,39 @@ export default {
     ...mapGetters({
       endpoint: 'map/polygonsEndpoint',
     }),
-
   },
 
   methods: {
     showData() {
-      console.log('%c addPolygonType', this.addPolygonType)
-      console.log('%c addingPolygonId', this.addingPolygonId)
-      console.log('%c addingPolygon', this.addingPolygon)
-      console.log('%c addedPolygonBuffer', 'color: green; font-weight: bold;', this.addedPolygonBuffer)
-      console.log('%c editedPolygonAvail', 'color: #FF6F00;', this.editedPolygonAvail)
-      console.log('%c editedPolygonCommenced', 'color: #FF6F00;', this.editedPolygonCommenced)
-      console.log('%c editedPolygonId', 'color: #FF6;', this.editedPolygonId)
-      console.log('%c editedPolygonBufferAvail', 'color: #FF6F00; font-weight: bold;', this.editedPolygonBufferAvail)
-      console.log('%c editedPolygonBufferCommenced', 'color: #FF6F00; font-weight: bold;', this.editedPolygonBufferCommenced)
-      console.log('%c deletedPolygonAvail', 'color: #D32F2F;', this.deletedPolygonAvail)
-      console.log('%c deletedPolygonCommenced', 'color: #D32F2F;', this.deletedPolygonCommenced)
-      console.log('%c deletedPolygonBufferAvail', 'color: #D32F2F; font-weight: bold;', this.deletedPolygonBufferAvail)
-      console.log('%c deletedPolygonBufferCommenced', 'color: #D32F2F; font-weight: bold;', this.deletedPolygonBufferCommenced)
-      console.log('%c serverPolygonsAvailable', 'color: #09b; font-weight: bold;', this.serverPolygonsAvailable)
-      console.log('%c serverPolygonsCommenced', 'color: #09b; font-weight: bold;', this.serverPolygonsCommenced)
+      console.log('%c addPolygonType: ', this.addPolygonType)
+      console.log('%c addingPolygonId: ', this.addingPolygonId)
+      console.log('%c addingPolygon: ', this.addingPolygon)
+      console.log('%c addedPolygonBuffer: ', 'color: green; font-weight: bold;', this.addedPolygonBuffer)
+      console.log('%c editedPolygonAvail: ', 'color: #FF6F00;', this.editedPolygonAvail)
+      console.log('%c editedPolygonCommenced: ', 'color: #FF6F00;', this.editedPolygonCommenced)
+      console.log('%c editedPolygonId: ', 'color: #FF6;', this.editedPolygonId)
+      console.log('%c editedPolygonBufferAvail: ', 'color: #FF6F00; font-weight: bold;', this.editedPolygonBufferAvail)
+      console.log('%c editedPolygonBufferCommenced: ', 'color: #FF6F00; font-weight: bold;', this.editedPolygonBufferCommenced)
+      console.log('%c deletedPolygonAvail: ', 'color: #D32F2F;', this.deletedPolygonAvail)
+      console.log('%c deletedPolygonCommenced: ', 'color: #D32F2F;', this.deletedPolygonCommenced)
+      console.log('%c deletedPolygonBufferAvail: ', 'color: #D32F2F; font-weight: bold;', this.deletedPolygonBufferAvail)
+      console.log('%c deletedPolygonBufferCommenced: ', 'color: #D32F2F; font-weight: bold;', this.deletedPolygonBufferCommenced)
+      console.log('%c serverPolygonsAvailable: ', 'color: #09b; font-weight: bold;', this.serverPolygonsAvailable)
+      console.log('%c serverPolygonsCommenced: ', 'color: #09b; font-weight: bold;', this.serverPolygonsCommenced)
+      console.log('%c initialServerPolygonsAvailable: ', 'color: #09b; font-weight: bold;', this.initialServerPolygonsAvailable)
+      console.log('%c initialServerPolygonsCommenced: ', 'color: #09b; font-weight: bold;', this.initialServerPolygonsCommenced)
+      console.log('%c compared states: ', 'color: red; font-weight: bold;', JSON.stringify(this.serverPolygonsAvailable) === JSON.stringify(this.initialServerPolygonsAvailable))
+      console.log(this.checkApplyButton())
       console.log('---------------------------------------------')
+    },
+
+    checkApplyButton() {
+      return (JSON.stringify(this.serverPolygonsAvailable) === JSON.stringify(this.initialServerPolygonsAvailable) && JSON.stringify(this.serverPolygonsCommenced) === JSON.stringify(this.initialServerPolygonsCommenced))
     },
 
     addListenersOnPolygonForEdit(polygon, id, typeOf) {
       window.google.maps.event.addListener(polygon, 'click', () => {
-        if (this.editActivated && !this.editedPolygonAvailId) {
+        if (this.editActivated && !this.editedPolygonId ? true : this.editedPolygonId === id) {
           const coordinates = polygon.getPath().getArray()
           const coordArr = []
           coordinates.forEach((elem) => {
@@ -127,7 +137,9 @@ export default {
             strokeColor: '#FF6F00',
             editable: true,
           })
-          this.editedPolygonAvailId = id
+          this.editedPolygonId = id
+          console.log('1')
+          console.log(typeOf === 'ServiceAvailable' && JSON.stringify(coordArr) !== JSON.stringify(this.serverPolygonsAvailable[id]))
           if (typeOf === 'ServiceAvailable' && JSON.stringify(coordArr) !== JSON.stringify(this.serverPolygonsAvailable[id])) {
             console.log('fired 1')
             this.editedPolygonAvail[id] = coordArr
@@ -143,7 +155,7 @@ export default {
 
     addListenersOnPolygonRightClick(polygon, typeOf) {
       window.google.maps.event.addListener(polygon, 'rightclick', () => {
-        this.editedPolygonAvailId = ''
+        this.editedPolygonId = ''
         this.deletedPolygonAvail = ''
         this.deletedPolygonCommenced = ''
         this.deletedPolygonBufferAvail = null
@@ -206,6 +218,7 @@ export default {
           const id = e.feature.getProperty('id')
           const currentPath = paths.map(elem => [elem.lng(), elem.lat()])
           this.serverPolygonsAvailable[id] = currentPath
+          this.initialServerPolygonsAvailable[id] = [...currentPath]
           const p = new window.google.maps.Polygon({
             paths,
             map,
@@ -224,6 +237,7 @@ export default {
           const id = e.feature.getProperty('id')
           const currentPath = paths.map(elem => [elem.lng(), elem.lat()])
           this.serverPolygonsCommenced[id] = currentPath
+          this.initialServerPolygonsCommenced[id] = [...currentPath]
           const p = new window.google.maps.Polygon({
             paths: build.getAt(0).getArray(),
             map,
@@ -307,6 +321,7 @@ export default {
           editable: false,
         })
         this.editedPolygonBufferAvail = null
+        this.editedPolygonId = ''
         const editedId = Object.keys(this.serverPolygonsAvailable).find(id => this.editedPolygonAvail[id])
         if (editedId) {
           this.serverPolygonsAvailable[editedId] = this.editedPolygonAvail[editedId]
@@ -318,6 +333,7 @@ export default {
           editable: false,
         })
         this.editedPolygonBufferCommenced = null
+        this.editedPolygonId = ''
         const editedId = Object.keys(this.serverPolygonsCommenced).find(id => this.editedPolygonCommenced[id])
         if (editedId) {
           this.serverPolygonsCommenced[editedId] = this.editedPolygonCommenced[editedId]
@@ -335,17 +351,21 @@ export default {
         })
         this.deletedPolygonBufferAvail = null
         delete this.serverPolygonsAvailable[this.deletedPolygonAvail]
+        this.deletedPolygonAvail = ''
       } else if (this.deletedPolygonBufferCommenced) {
         this.deletedPolygonBufferCommenced.setOptions({
           visible: false,
         })
         this.deletedPolygonBufferCommenced = null
         delete this.serverPolygonsCommenced[this.deletedPolygonCommenced]
+        this.deletedPolygonCommenced = ''
       } else {
         // eslint-disable-next-line no-alert
         alert("Click on the polygon you want to delete before hitting 'Delete polygon' button, or click right mouse button to cancel deleting this polygon")
       }
     },
+
+    applyChanges() {},
   },
 
   mounted() {
