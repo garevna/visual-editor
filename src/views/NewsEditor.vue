@@ -1,4 +1,5 @@
 <template>
+  <v-container>
     <v-card flat
       class="mx-auto my-auto"
       width="80%"
@@ -52,7 +53,7 @@
           </v-col>
         </v-row>
         <v-card-text>
-          <v-img v-if="logoSrc" :src="logoSrc" max-height="150" max-widt="300" contain></v-img>
+          <v-img v-if="logoSrc" :src="logoSrc" max-height="150" max-width="300" contain></v-img>
         </v-card-text>
         <v-card-text class="pl-10">
           <v-file-input
@@ -60,13 +61,13 @@
             prepend-icon="mdi-camera"
             @change="uploadLogo"
             v-model="logo.file"
-            :hint="logo.uploadHint"
-            :error="logo.error"
+            :hint="uploadHint"
+            :error="error"
           ></v-file-input>
         </v-card-text>
       </v-card>
-
     </v-card>
+  </v-container>
 </template>
 
 <script>
@@ -81,13 +82,14 @@ export default {
       type: String,
       required: true,
     },
+    logoFromServer: String,
   },
 
   data: () => ({
     logo: {
+      source: 'article',
       file: null,
-      tmpSrc: null,
-      changed: false,
+      src: '',
       limit: 100000,
     },
     close: false,
@@ -98,14 +100,23 @@ export default {
       if (!this.id || !this.$store.state.news.news) return null
       return this.$store.state.news.news[this.id]
     },
-    logoSrc() {
-      if (this.article.logo) {
-        return `${this.$store.getters['news/logosEndpoint']}/${this.article.logo}`
-      }
-      return this.logo.tmpSrc
+    logoEndpoint() {
+      return this.$store.getters['news/logosEndpoint']
     },
-    'logo.uploadHint': () => { this.setHint(this.logo.file, this.logo.limit) },
-    'logo.error': () => Boolean(this.logo.uploadHint),
+    logoSrc() {
+      if (this.logo.source === 'article' && this.article.logo) return `${this.logoEndpoint}/${this.article.logo}`
+      if (this.logo.source === 'client') return this.logo.src
+      if (this.logo.source === 'server') return `${this.logoEndpoint}/${this.logoFromServer}`
+      return ''
+    },
+    uploadHint() {
+      if (this.logo.source !== 'client') return ''
+      if (!this.logo.file || !(this.logo.file instanceof File)) return ''
+      if (this.logo.file.size > this.logo.limit) return 'File is too large'
+      if (!this.logo.file.type.match(/image/)) return 'Invalid file type'
+      return ''
+    },
+    error() { return Boolean(this.uploadHint) },
   },
 
   watch: {
@@ -114,62 +125,44 @@ export default {
     },
     'logo.file': {
       handler(newVal) {
-        if (!newVal) {
-          this.article.logo = ''
-          this.logo.tmpSrc = ''
-          this.logo.changed = true
-        }
+        if (!newVal) this.logo.src = ''
+        else this.logo.source = 'client'
       },
       deep: true,
+    },
+    logoFromServer() {
+      this.logo.source = 'server'
     },
   },
 
   methods: {
 
     async init() {
-      this.logo.file = new File([0], '')
-      this.logo.tmpSrc = ''
-
-      if (this.id) {
-        if (this.article) {
-          this.logo.file = new File([0], this.article.logo)
-          this.logo.tmpSrc = this.article.logo
-        }
-      }
+      this.logo.file = null
+      this.logo.src = ''
+      this.logo.source = 'article'
     },
 
     async saveLogo() {
       try {
         return await this.$store.dispatch('news/SAVE_LOGO', this.logo.file)
-      } catch (err) {
-        /* eslint-disable-next-line */
-        console.warn(err)
-        return ''
-      }
+      } catch (err) { return '' }
     },
 
     uploadLogo() {
-      if (!this.logo.file) {
-        this.logo.tmpSrc = ''
-        return false
-      }
-      if (!this.logo.file.type.match(/image/) || this.logo.file.size > this.logo.limit) return false
+      if (!this.logo.file || this.logo.error) return
 
       const reader = new FileReader()
       reader.onload = function s() {
-        this.logo.tmpSrc = reader.result
-        this.logo.changed = true
+        this.logo.src = reader.result
+        this.logo.source = 'client'
       }.bind(this)
       reader.readAsDataURL(this.logo.file)
-
-      return true
     },
 
     async saveArticle() {
-      if (this.logo.changed) {
-        this.$set(this.article, 'logo', this.logo.file ? await this.saveLogo() : null)
-      }
-
+      if (this.logo.source === 'client') this.$set(this.article, 'logo', this.logo.file ? await this.saveLogo() : '')
+      if (this.logo.source === 'server') this.$set(this.article, 'logo', this.logoFromServer)
       this.$store.dispatch('news/SAVE_NEWS')
     },
 
@@ -179,7 +172,6 @@ export default {
         propertyName: this.id,
       })
       await this.$store.dispatch('news/SAVE_NEWS')
-
       this.close = true
     },
   },

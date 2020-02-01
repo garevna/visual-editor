@@ -100,7 +100,6 @@ export default {
           ])
         })
         this.polygons = coordArr
-        // console.log(coordArr)
       })
     },
 
@@ -117,6 +116,7 @@ export default {
           coordinates: this.polygons,
         },
       }
+      /* eslint-disable-next-line */
       console.log(newPolygon)
     },
   },

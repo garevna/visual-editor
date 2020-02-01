@@ -9,19 +9,16 @@
 </template>
 
 <script>
-// export default {
-//   data: () => ({
-//     files: null,
-//     currentFile: '',
-//     container: null,
-//     content: null,
-//   }),
-//   computed: {
+export default {
+  data: () => ({
+    points: null,
+  }),
+  computed: {
 
-//   },
-//   mounted() {
-//     this.$store.dispatch('blog/GET_BLOG_CONTENT')
-//       .then((response) => { this.content = response })
-//   },
-// }
+  },
+  mounted() {
+    this.$store.dispatch('map/GET_POINTS')
+      .then((response) => { this.points = response })
+  },
+}
 </script>
