@@ -9,13 +9,25 @@
       <!-- actions -->
 
       <v-card-actions>
-        <v-btn text @click="saveArticle">
-          <v-icon large color="info">mdi-content-save</v-icon>
-        </v-btn>
+        <v-tooltip top>
+          <template v-slot:activator="{ on }">
+            <v-btn text @click="saveArticle" v-on="on">
+              <v-icon large color="info">mdi-content-save</v-icon>
+            </v-btn>
+          </template>
+          <span>Save current article</span>
+        </v-tooltip>
+
         <v-spacer/>
-        <v-btn text @click="removeArticle">
-          <v-icon large color="error">mdi-delete-circle</v-icon>
-        </v-btn>
+
+        <v-tooltip top>
+          <template v-slot:activator="{ on }">
+            <v-btn text @click="removeArticle" v-on="on">
+              <v-icon large color="error">mdi-delete-circle</v-icon>
+            </v-btn>
+          </template>
+          <span>Delete current article</span>
+        </v-tooltip>
       </v-card-actions>
       <v-divider/>
 
@@ -67,14 +79,22 @@
         </v-card-text>
       </v-card>
     </v-card>
+
+    <RemovePopup :visibility.sync="removePopupVisible"
+                 :confirm.sync="confirmRemoving"
+                 removing="Media article"
+                 :details="article.title"
+      />
   </v-container>
 </template>
 
 <script>
 
+import RemovePopup from '@/components/RemovePopup.vue'
+
 export default {
   components: {
-    //
+    RemovePopup,
   },
 
   props: {
@@ -93,6 +113,9 @@ export default {
       limit: 100000,
     },
     close: false,
+
+    removePopupVisible: false,
+    confirmRemoving: false,
   }),
 
   computed: {
@@ -133,6 +156,19 @@ export default {
     logoFromServer() {
       this.logo.source = 'server'
     },
+
+    confirmRemoving(val) {
+      if (!val) return
+      this.$store.commit('DELETE_PROPERTY', {
+        object: this.$store.state.news.news,
+        propertyName: this.id,
+      })
+      this.$store.dispatch('news/SAVE_NEWS')
+        .then(() => {
+          this.removePopupVisible = false
+          this.close = true
+        })
+    },
   },
 
   methods: {
@@ -167,12 +203,8 @@ export default {
     },
 
     async removeArticle() {
-      this.$store.commit('DELETE_PROPERTY', {
-        object: this.$store.state.news.news,
-        propertyName: this.id,
-      })
-      await this.$store.dispatch('news/SAVE_NEWS')
-      this.close = true
+      this.confirmRemoving = false
+      this.removePopupVisible = true
     },
   },
 

@@ -10,11 +10,13 @@ const getters = {
 }
 
 const mutations = {
-  FAQ_content: (state, newContent) => { state.content = JSON.parse(JSON.stringify(newContent)) },
+  UPDATE_FAQ: (state, newContent) => {
+    state.content = JSON.parse(JSON.stringify(newContent))
+  },
 }
 
 const actions = {
-  async GET_DATA({ getters, commit }) {
+  async GET_FAQ({ getters, commit }) {
     const response = await (
       await fetch(getters.endpoint).catch(err => commit('ERROR_HANDLER', err, { root: true }))
     ).json()

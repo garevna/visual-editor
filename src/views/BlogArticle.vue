@@ -8,13 +8,26 @@
       <!-- actions -->
 
       <v-card-actions>
-        <v-btn text @click="saveArticle">
-          <v-icon large color="info">mdi-content-save</v-icon>
-        </v-btn>
+        <v-tooltip top>
+          <template v-slot:activator="{ on }">
+            <v-btn text @click="saveArticle" v-on="on">
+              <v-icon large color="info">mdi-content-save</v-icon>
+            </v-btn>
+          </template>
+          <span>Save current article</span>
+        </v-tooltip>
+
         <v-spacer/>
-        <v-btn text @click="removeArticle">
-          <v-icon large color="error">mdi-delete-circle</v-icon>
-        </v-btn>
+
+        <v-tooltip top>
+          <template v-slot:activator="{ on }">
+            <v-btn text @click="removeArticle" v-on="on">
+              <v-icon large color="error">mdi-delete-circle</v-icon>
+            </v-btn>
+          </template>
+          <span>Delete current article</span>
+        </v-tooltip>
+
       </v-card-actions>
       <v-divider/>
       <!-- header -->
@@ -104,23 +117,25 @@
       </v-card>
 
       <VueEditor v-if="article.type === 'file'" v-model="content.text"/>
-      <!--
-        <Popup v-model="remove"
-          :confirm.sync="confirmRemoving"
-          :removePopupVisible="removePopupShow"
-          :removing="blogContent[article].title"
+
+      <RemovePopup :visibility.sync="removePopupVisible"
+                   :confirm.sync="confirmRemoving"
+                   removing="Article"
+                   :details="article.title"
         />
-      -->
+
     </v-card>
 </template>
 
 <script>
 
 import { VueEditor } from 'vue2-editor'
+import RemovePopup from '@/components/RemovePopup.vue'
 
 export default {
   components: {
     VueEditor,
+    RemovePopup,
   },
 
   props: {
@@ -151,6 +166,9 @@ export default {
       changed: false,
     },
     close: false,
+
+    removePopupVisible: false,
+    confirmRemoving: false,
   }),
   computed: {
     article() {
@@ -194,7 +212,7 @@ export default {
     'picture.file': {
       handler(newVal) {
         if (this.picture.error) return
-        if (!newVal) this.logo.src = ''
+        if (!newVal) this.picture.src = ''
         else this.picture.source = 'client'
       },
       deep: true,
@@ -212,6 +230,15 @@ export default {
     },
     avatarFromServer() {
       this.avatar.source = 'server'
+    },
+
+    confirmRemoving(val) {
+      if (!val) return
+      this.$store.dispatch('blog/REMOVE_ARTICLE', this.id)
+        .then(() => {
+          this.removePopupVisible = false
+          this.close = true
+        })
     },
   },
 
@@ -303,7 +330,8 @@ export default {
     },
 
     async removeArticle() {
-      this.close = await this.$store.dispatch('blog/REMOVE_ARTICLE', this.id)
+      this.confirmRemoving = false
+      this.removePopupVisible = true
     },
   },
 

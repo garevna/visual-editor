@@ -68,10 +68,10 @@
         <v-tooltip top v-if="articleId">
           <template v-slot:activator="{ on }">
             <v-btn @click="dialog=true" v-on="on">
-              <v-icon color="warning">mdi-image</v-icon>
+              <v-icon large color="warning">mdi-image</v-icon>
             </v-btn>
           </template>
-          <span>Logotypes</span>
+          <span>Select logo from server</span>
         </v-tooltip>
     </v-bottom-navigation>
   </v-container>
@@ -127,15 +127,18 @@ export default {
     async newArticle() {
       const id = new Date().getTime().toString()
 
-      this.$set(this.newsContent, id, {
-        title: 'DGTek in media...',
-        source: '',
-        date: new Date().toLocaleDateString(),
-        logo: '',
-        ref: '',
+      this.$store.commit('SET_PROPERTY', {
+        object: this.$store.state.news.news,
+        propertyName: id,
+        value: {
+          title: 'DGTek in media...',
+          source: '',
+          date: new Date().toLocaleDateString(),
+          logo: '',
+          ref: '',
+        },
       })
 
-      this.$store.commit('news/UPDATE_ARTICLE')
       this.saveNewsContent()
       this.articleId = id
     },
@@ -145,6 +148,8 @@ export default {
     },
 
     saveNewsContent() {
+      /* eslint-disable-next-line */
+      console.log('NEWS CONTENT:\n', this.newsContent)
       this.$store.dispatch('news/SAVE_NEWS', this.newsContent)
         .then(
           () => {},

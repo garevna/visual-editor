@@ -20,13 +20,6 @@ const mutations = {
     state.content = JSON.parse(JSON.stringify(content))
   },
 
-  UPDATE_ARTICLE: (state, commit, payload) => {
-    if (!state.content) return
-    if (!payload || !payload.id || !payload.article) return
-    setProperty(state.content, payload.id, payload.article)
-    state.contentChanged = true
-  },
-
 }
 
 const actions = {
@@ -46,8 +39,8 @@ const actions = {
     const { file, picture, author_ava } = state.content[id]
 
     if (file) await dispatch('REMOVE_FILE', `${getters.contentEndpoint}/${file}`)
-    if (picture) await dispatch('REMOVE_FILE', `${getters.imagesEndpoint}/${picture}`)
-    if (author_ava) await dispatch('REMOVE_FILE', `${getters.avatarsEndpoint}/${author_ava}`)
+    // if (picture) await dispatch('REMOVE_FILE', `${getters.imagesEndpoint}/${picture}`)
+    // if (author_ava) await dispatch('REMOVE_FILE', `${getters.avatarsEndpoint}/${author_ava}`)
 
     commit('DELETE_PROPERTY', {
       object: state.content,

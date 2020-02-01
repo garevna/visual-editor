@@ -79,7 +79,7 @@
               <v-icon large color="warning">mdi-image-search</v-icon>
             </v-btn>
           </template>
-          <span>Article picture</span>
+          <span>Select article picture from server</span>
         </v-tooltip>
 
         <v-tooltip top v-if="articleId">
@@ -88,7 +88,7 @@
               <v-icon large color="warning">mdi-account-box</v-icon>
             </v-btn>
           </template>
-          <span>Author avatar</span>
+          <span>Select author avatar from server</span>
         </v-tooltip>
     </v-bottom-navigation>
 

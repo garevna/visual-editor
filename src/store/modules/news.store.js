@@ -15,12 +15,12 @@ const getters = {
 }
 
 const mutations = {
-  UPDATE_NEWS: (state, news) => {
-    state.news = news
-  },
 
   SET_SELECTED_LOGO: (state, logoFileName) => {
     state.selectedLogo = logoFileName
+  },
+  UPDATE_NEWS: (state, news) => {
+    state.news = news
   },
 
 }
