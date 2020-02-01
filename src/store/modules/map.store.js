@@ -39,6 +39,12 @@ const actions = {
     console.log(response)
     return response
   },
+
+  async GET_POINTS({ state, getters, commit }) {
+    commit('MAP_POINTS', await (await fetch(getters.pointsEndpoint)).json())
+    return state.points
+  },
+
   async SAVE_POINTS({ getters, commit }, points) {
     const response = await fetch(getters.pointsEndpoint, {
       method: 'POST',
