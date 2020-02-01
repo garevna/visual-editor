@@ -6,6 +6,7 @@ const state = {
   news: null,
   startTime: new Date().getTime(),
   contentChanged: false,
+  selectedLogo: null,
 }
 
 const getters = {
@@ -18,17 +19,8 @@ const mutations = {
     state.news = news
   },
 
-  UPDATE_ARTICLE: (state, payload) => {
-    if (!state.news) return
-    if (!payload || !payload.id || !payload.article) return
-    setProperty(state.news, payload.id, payload.article)
-    state.contentChanged = true
-  },
-
-  REMOVE_ARTICLE: (state, id) => {
-    if (!state.news) return
-    deleteProperty(state.news, id)
-    state.contentChanged = true
+  SET_SELECTED_LOGO: (state, logoFileName) => {
+    state.selectedLogo = logoFileName
   },
 
 }

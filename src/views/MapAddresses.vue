@@ -154,9 +154,9 @@ export default {
           }],
       })
     },
-  },
-  mounted() {
-    this.initMap()
+    mounted() {
+      this.initMap()
+    },
   },
 }
 </script>

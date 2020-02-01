@@ -3,7 +3,6 @@
       <v-navigation-drawer
         absolute
         temporary
-        min-width="80"
         width="70%"
         v-model="navigate"
       >
@@ -23,31 +22,57 @@
                 <v-icon color="success">{{ 'mdi-link-box-variant' }}</v-icon>
               </v-list-item-icon>
               <v-list-item-content>
-                <v-list-item-title v-text="newsContent[id].title">
-                  <v-avatar v-if="newsContent[id].logo">
-                    <v-img :src="getLogo(id)" max-width="50"/>
-                  </v-avatar>
-                </v-list-item-title>
+                <v-list-item-title v-text="newsContent[id].title"></v-list-item-title>
               </v-list-item-content>
 
             </v-list-item>
           </v-list-item-group>
         </v-list>
       </v-navigation-drawer>
-      <NewsEditor v-if="articleId && article" :id="articleId" :sourceArticle="article"/>
+
+      <NewsEditor v-if="articleId && article" :id="articleId" :sourceArticle="article" :logoFromServer="logo"/>
+
+      <ImageGallery v-if="logosEndpoint"
+                    :endpoint="logosEndpoint"
+                    :maxWidth="logoMaxWidth"
+                    :maxHeight="logoMaxHeight"
+                    :dialog.sync="dialog"
+                    :logo.sync="logo"
+      />
 
       <v-bottom-navigation
         v-model="bottomNav"
+        app
         fixed
-        shift
       >
-        <v-btn @click="navigate = true">
-          <v-icon large color="info">mdi-cards-variant</v-icon>
-        </v-btn>
+        <v-tooltip top>
+          <template v-slot:activator="{ on }">
+            <v-btn @click="navigate=true" v-on="on">
+              <v-icon large color="info">mdi-file-search</v-icon>
+            </v-btn>
+          </template>
+          <span>List of news</span>
+        </v-tooltip>
 
-        <v-btn>
-          <v-icon color="secondary">mdi-image</v-icon>
-        </v-btn>
+        <v-tooltip top>
+          <template v-slot:activator="{ on }">
+          <v-btn text @click="newArticle" v-on="on">
+            <v-icon large color="info">
+              mdi-new-box
+            </v-icon>
+          </v-btn>
+          </template>
+          <span>Add new media article</span>
+        </v-tooltip>
+
+        <v-tooltip top v-if="articleId">
+          <template v-slot:activator="{ on }">
+            <v-btn @click="dialog=true" v-on="on">
+              <v-icon color="warning">mdi-image</v-icon>
+            </v-btn>
+          </template>
+          <span>Logotypes</span>
+        </v-tooltip>
     </v-bottom-navigation>
   </v-container>
 </template>
@@ -56,10 +81,12 @@
 /* import Popup from '@/components/RemovePopup.vue' */
 
 import NewsEditor from '@/views/NewsEditor.vue'
+import ImageGallery from '@/components/ImageGallery.vue'
 
 export default {
   components: {
     NewsEditor,
+    ImageGallery,
   },
 
   data: () => ({
@@ -67,6 +94,11 @@ export default {
     article: null,
     bottomNav: 0,
     navigate: false,
+    logosEndpoint: null,
+    logoMaxWidth: 150,
+    logoMaxHeight: 80,
+    dialog: false,
+    logo: null,
   }),
 
   computed: {
@@ -86,12 +118,12 @@ export default {
         .then((response) => { this.article = response })
       this.navigate = false
     },
+    logo(val) {
+      this.dialog = !val
+    },
   },
 
   methods: {
-    getLogo(id) {
-      return `${this.$store.getters['news/logosEndpoint']}/${this.newsContent[id].logo}`
-    },
     async newArticle() {
       const id = new Date().getTime().toString()
 
@@ -116,7 +148,7 @@ export default {
       this.$store.dispatch('news/SAVE_NEWS', this.newsContent)
         .then(
           () => {},
-          err => this.$store.dispatch('ERROR_HANDLER', err),
+          error => this.$store.dispatch('TRACE_ERROR', { moduleName: 'news', error }),
         )
     },
 
@@ -127,6 +159,7 @@ export default {
 
   mounted() {
     this.$store.dispatch('news/GET_NEWS')
+      .then(() => { this.logosEndpoint = this.$store.getters['news/logosEndpoint'] })
   },
 }
 </script>

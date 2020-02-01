@@ -71,8 +71,8 @@
                 prepend-icon="mdi-camera"
                 @change="uploadAvatar"
                 v-model="avatar.file"
-                :hint="avatar.uploadHint"
-                :error="avatar.error"
+                :hint="avatarUploadHint"
+                :error="avatarError"
               ></v-file-input>
             </v-card-text>
           </v-col>
@@ -94,8 +94,8 @@
                 prepend-icon="mdi-camera"
                 @change="uploadPicture"
                 v-model="picture.file"
-                :hint="picture.uploadHint"
-                :error="picture.error"
+                :hint="pictureUploadHint"
+                :error="pictureError"
               >
               </v-file-input>
             </v-card-text>
@@ -128,23 +128,21 @@ export default {
       type: String,
       required: true,
     },
+    imageFromServer: String,
+    avatarFromServer: String,
   },
 
   data: () => ({
     picture: {
+      source: 'article',
       file: null,
-      tmpSrc: '',
-      uploadHint: '',
-      error: false,
-      changed: false,
+      src: null,
       limit: 500000,
     },
     avatar: {
+      source: 'article',
       file: null,
-      tmpSrc: '',
-      uploadHint: '',
-      error: false,
-      changed: false,
+      src: null,
       limit: 50000,
     },
     content: {
@@ -159,22 +157,33 @@ export default {
       if (!this.id || !this.$store.state.blog.content) return null
       return this.$store.state.blog.content[this.id]
     },
+    imageEndpoint() {
+      return this.$store.getters['blog/imagesEndpoint']
+    },
+    avatarEndpoint() {
+      return this.$store.getters['blog/avatarsEndpoint']
+    },
+
     pictureSrc() {
-      if (this.article && this.article.picture) {
-        return `${this.$store.getters['blog/imagesEndpoint']}/${this.article.picture}`
-      }
-      return this.picture.tmpSrc
+      if (this.picture.source === 'article' && this.article.picture) return `${this.imageEndpoint}/${this.article.picture}`
+      if (this.picture.source === 'client' && !this.pictureError) return this.picture.src
+      if (this.picture.source === 'server') return `${this.imageEndpoint}/${this.imageFromServer}`
+      return ''
     },
     avatarSrc() {
-      if (this.article && this.article.author_ava) {
-        return `${this.$store.getters['blog/avatarsEndpoint']}/${this.article.author_ava}`
-      }
-      return this.avatar.tmpSrc
+      if (this.avatar.source === 'article' && this.article.author_ava) return `${this.avatarEndpoint}/${this.article.author_ava}`
+      if (this.avatar.source === 'client' && !this.avatarError) return this.avatar.src
+      if (this.avatar.source === 'server') return `${this.avatarEndpoint}/${this.avatarFromServer}`
+      return ''
     },
-    'picture.uploadHint': () => { this.setHint(this.picture.file, this.picture.limit) },
-    'avatar.uploadHint': () => { this.setHint(this.avatar.file, this.avatar.limit) },
-    'picture.error': () => Boolean(this.picture.uploadHint),
-    'avatar.error': () => Boolean(this.avatar.uploadHint),
+    pictureUploadHint() {
+      return this.setHint('picture')
+    },
+    avatarUploadHint() {
+      return this.setHint('avatar')
+    },
+    pictureError() { return Boolean(this.pictureUploadHint) },
+    avatarError() { return Boolean(this.avatarUploadHint) },
 
   },
 
@@ -184,34 +193,29 @@ export default {
     },
     'picture.file': {
       handler(newVal) {
-        if (!newVal) {
-          this.setPicture('')
-          this.picture.tmpSrc = ''
-          this.picture.changed = true
-        }
+        if (this.picture.error) return
+        if (!newVal) this.logo.src = ''
+        else this.picture.source = 'client'
       },
       deep: true,
     },
     'avatar.file': {
       handler(newVal) {
-        if (!newVal) {
-          this.setAvatar('')
-          this.avatar.tmpSrc = null
-          this.avatar.changed = true
-        }
+        if (this.avatar.error) return
+        if (!newVal) this.avatar.src = ''
+        else this.avatar.source = 'client'
       },
       deep: true,
+    },
+    imageFromServer() {
+      this.picture.source = 'server'
+    },
+    avatarFromServer() {
+      this.avatar.source = 'server'
     },
   },
 
   methods: {
-    setHint(file, limit) {
-      if (!file || !(file instanceof File)) return ''
-      if (!file.type.match('image')) return 'Invalid file type'
-      if (file.size > limit) return 'File is too large'
-      return ''
-    },
-
     setPicture(newVal) {
       this.$set(this.$store.state.blog.content[this.id], 'picture', newVal)
     },
@@ -219,21 +223,28 @@ export default {
       this.$set(this.$store.state.blog.content[this.id], 'author_ava', newVal)
     },
 
+    setHint(param) {
+      if (this[param].source !== 'client') return ''
+      if (!this[param].file || !(this[param].file instanceof File)) return ''
+      if (this[param].file.size > this[param].limit) return 'File is too large'
+      if (!this[param].file.type.match(/image/)) return 'Invalid file type'
+      return ''
+    },
+
     async init() {
-      this.picture.file = new File([0], '')
-      this.picture.tmpSrc = null
-      this.avatar.file = new File([0], '')
-      this.avatar.tmpSrc = null
+      this.picture.file = null
+      this.picture.src = ''
+      this.picture.source = 'article'
+
+      this.avatar.file = null
+      this.avatar.src = ''
+      this.avatar.source = 'article'
 
       if (this.id) {
         if (this.article && this.article.type === 'file') {
           this.content.file = this.article.file
           this.content.text = await this.$store.dispatch('blog/GET_ARTICLE_CONTENT', this.article.file)
-          this.picture.file = new File([0], this.article.picture)
-          this.picture.tmpSrc = this.article.picture
         }
-        this.avatar.file = new File([0], this.article.author_ava)
-        this.avatar.tmpSrc = this.article.author_ava
       }
     },
 
@@ -260,48 +271,32 @@ export default {
       } catch (err) { return '' }
     },
 
-    uploadImageFile(param) {
-      if (['picture', 'avatar'].indexOf(param) === -1) return false
-
-      if (!this[param].file) {
-        this[param].tmpSrc = ''
-        return false
-      }
-      if (this[param].error) return false
+    uploadImage(param) {
+      if (!this[param].file || this[`${param}Error`]) return
 
       const reader = new FileReader()
       reader.onload = function s() {
-        this[param].tmpSrc = reader.result
-        this[param].changed = true
+        this[param].src = reader.result
+        this[param].source = 'client'
       }.bind(this)
       reader.readAsDataURL(this[param].file)
-
-      return true
     },
 
     uploadPicture() {
-      return this.uploadImageFile('picture')
+      this.uploadImage('picture')
     },
 
     uploadAvatar() {
-      return this.uploadImageFile('avatar')
+      this.uploadImage('avatar')
     },
 
     async saveArticle() {
-      if (this.picture.changed) {
-        this.$set(
-          this.$store.state.blog.content[this.id],
-          'picture',
-          this.picture.file ? await this.savePicture() : '',
-        )
-      }
-      if (this.avatar.changed) {
-        this.$set(
-          this.$store.state.blog.content[this.id],
-          'author_ava',
-          this.avatar.file ? await this.saveAvatar() : '',
-        )
-      }
+      if (this.picture.source === 'client') this.$set(this.article, 'picture', this.picture.file ? await this.savePicture() : '')
+      if (this.picture.source === 'server') this.$set(this.article, 'picture', this.imageFromServer)
+
+      if (this.avatar.source === 'client') this.$set(this.article, 'author_ava', this.avatar.file ? await this.saveAvatar() : '')
+      if (this.avatar.source === 'server') this.$set(this.article, 'author_ava', this.avatarFromServer)
+
       this.saveContent(this.content.text)
 
       this.$store.dispatch('blog/SAVE_CONTENT')

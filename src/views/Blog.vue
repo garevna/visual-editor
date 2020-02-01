@@ -1,11 +1,10 @@
 <template>
   <v-container>
       <v-navigation-drawer
-        app
-        permanent
-        expand-on-hover
-        min-width="80"
+        absolute
+        temporary
         width="70%"
+        v-model="navigate"
       >
         <v-list v-if="keys">
           <v-subheader>
@@ -32,24 +31,96 @@
         </v-list>
       </v-navigation-drawer>
 
-      <BlogArticle v-if="articleId && article" :id="articleId" :sourceArticle="article"/>
+      <BlogArticle v-if="articleId && article" :id="articleId" :sourceArticle="article" :imageFromServer="image" :avatarFromServer="avatar"/>
+
+      <ImageGallery v-if="imagesEndpoint"
+                    :endpoint="imagesEndpoint"
+                    :maxWidth="imageMaxWidth"
+                    :maxHeight="imageMaxHeight"
+                    :dialog.sync="imageDialog"
+                    :logo.sync="image"
+      />
+      <ImageGallery v-if="avatarsEndpoint"
+                    :endpoint="avatarsEndpoint"
+                    :maxWidth="avatarMaxWidth"
+                    :maxHeight="avatarMaxHeight"
+                    :dialog.sync="avatarDialog"
+                    :logo.sync="avatar"
+      />
+
+      <v-bottom-navigation
+        v-model="bottomNav"
+        app
+        fixed
+      >
+        <v-tooltip top>
+          <template v-slot:activator="{ on }">
+            <v-btn @click="navigate=true" v-on="on">
+              <v-icon large color="info">mdi-file-search</v-icon>
+            </v-btn>
+          </template>
+          <span>List of blog articles</span>
+        </v-tooltip>
+
+        <v-tooltip top>
+          <template v-slot:activator="{ on }">
+          <v-btn text @click="createNewArticle" v-on="on">
+            <v-icon large color="info">
+              mdi-new-box
+            </v-icon>
+          </v-btn>
+          </template>
+          <span>Add new article</span>
+        </v-tooltip>
+
+        <v-tooltip top v-if="articleId">
+          <template v-slot:activator="{ on }">
+            <v-btn @click="imageDialog=true" v-on="on">
+              <v-icon large color="warning">mdi-image-search</v-icon>
+            </v-btn>
+          </template>
+          <span>Article picture</span>
+        </v-tooltip>
+
+        <v-tooltip top v-if="articleId">
+          <template v-slot:activator="{ on }">
+            <v-btn @click="avatarDialog=true" v-on="on">
+              <v-icon large color="warning">mdi-account-box</v-icon>
+            </v-btn>
+          </template>
+          <span>Author avatar</span>
+        </v-tooltip>
+    </v-bottom-navigation>
 
   </v-container>
 </template>
 
 <script>
 /* import Popup from '@/components/RemovePopup.vue' */
-
+import ImageGallery from '@/components/ImageGallery.vue'
 import BlogArticle from '@/views/BlogArticle.vue'
 
 export default {
   components: {
     BlogArticle,
+    ImageGallery,
   },
 
   data: () => ({
     articleId: null,
     article: null,
+    navigate: false,
+    bottomNav: 0,
+    image: null,
+    avatar: null,
+    imageDialog: false,
+    avatarDialog: false,
+    imagesEndpoint: null,
+    avatarsEndpoint: null,
+    avatarMaxWidth: 70,
+    avatarMaxHeight: 70,
+    imageMaxWidth: 300,
+    imageMaxHeight: 250,
   }),
 
   computed: {
@@ -67,6 +138,13 @@ export default {
       if (!val) return
       this.$store.dispatch('blog/GET_ARTICLE_BY_ID', val)
         .then((response) => { this.article = response })
+      this.navigate = false
+    },
+    image(val) {
+      this.imageDialog = !val
+    },
+    avatar(val) {
+      this.avatarDialog = !val
     },
   },
 
@@ -108,6 +186,11 @@ export default {
   },
   mounted() {
     this.$store.dispatch('blog/GET_CONTENT')
+    this.$store.dispatch('blog/GET_CONTENT')
+      .then(() => {
+        this.imagesEndpoint = this.$store.getters['blog/imagesEndpoint']
+        this.avatarsEndpoint = this.$store.getters['blog/avatarsEndpoint']
+      })
   },
 }
 </script>
