@@ -1,7 +1,6 @@
 <template>
   <v-container>
-    <v-card flat class="pt-4" id="map" min-height="70vh">
-    </v-card>
+    <v-card flat class="pt-4" id="map" min-height="70vh"/>
     <v-row class="justify-space-around align-end">
 
        <v-card flat class="pa-4" max-width="220px">
@@ -77,7 +76,6 @@ export default {
           marker.setOptions({
             draggable: true,
           })
-          // console.log(123)
           window.google.maps.event.addListener(marker, 'drag', () => {
             marker.setOptions({
               label: 'Editing',
@@ -154,9 +152,9 @@ export default {
           }],
       })
     },
-    mounted() {
-      this.initMap()
-    },
+  },
+  mounted() {
+    this.initMap()
   },
 }
 </script>
