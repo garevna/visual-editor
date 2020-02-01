@@ -438,10 +438,6 @@ export default {
         type: 'FeatureCollection',
         features: [...availArr, ...commencedArr],
       }
-<<<<<<< HEAD
-      /* eslint-disable-next-line */
-      console.log(newPolygon)
-=======
       document.querySelector('#map').innerHTML = '<p style="text-align: center; margin-top: 50px;">Loading...</p>'
 
       this.drawing = null
@@ -468,7 +464,6 @@ export default {
 
       await this.$store.dispatch('map/SAVE_POLYGONS', structureToSend)
       this.initMap()
->>>>>>> b552e791941153c665bf9b9bd097a6dbc9ce1c9a
     },
   },
 
