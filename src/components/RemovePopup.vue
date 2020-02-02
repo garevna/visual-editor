@@ -2,9 +2,14 @@
   <v-row justify="center">
     <v-dialog v-model="visibility" persistent max-width="700">
       <v-card class="pa-4">
-        <v-card-title text-color="warning">Be careful with removing files from server</v-card-title>
-        <v-card-text v-if="removing">{{removing}}</v-card-text>
-        <v-card-text v-if="details">{{details}}</v-card-text>
+        <v-card-title class="error--text">
+          <v-icon large color="error">mdi-alert</v-icon>
+          Be careful with removing files from server
+        </v-card-title>
+        <v-card flat>
+          <v-card-text class="warning" v-if="removing" v-html="removing"></v-card-text>
+          <v-card-text v-if="details" v-html="details"></v-card-text>
+        </v-card>
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn color="green darken-1" text @click="$emit('update:visibility', false)">Cancel</v-btn>
@@ -21,7 +26,7 @@ export default {
   props: {
     visibility: Boolean,
     removing: {
-      type: [String, Object],
+      type: String,
       default: '',
     },
     details: {

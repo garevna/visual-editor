@@ -73,7 +73,7 @@
           <v-col cols="2">
             <v-card-text raised>
               <v-avatar>
-                <v-img v-if="avatarSrc" :src="avatarSrc"></v-img>
+                <v-img v-if="avatarSrc" :src="avatarSrc" onerror="imageError"></v-img>
               </v-avatar>
             </v-card-text>
           </v-col>
@@ -97,7 +97,7 @@
         <v-row v-if="article.type === 'file'">
           <v-col cols="6">
             <v-card-text class="pr-10">
-              <v-img v-if="pictureSrc" :src="pictureSrc"></v-img>
+              <v-img v-if="pictureSrc" :src="pictureSrc" onerror="imageError"></v-img>
             </v-card-text>
           </v-col>
           <v-col>
@@ -120,7 +120,7 @@
 
       <RemovePopup :visibility.sync="removePopupVisible"
                    :confirm.sync="confirmRemoving"
-                   removing="Article"
+                   removing="<b>Article</b>"
                    :details="article.title"
         />
 
@@ -332,6 +332,10 @@ export default {
     async removeArticle() {
       this.confirmRemoving = false
       this.removePopupVisible = true
+    },
+    imageError() {
+      /* eslint-disable no-console */
+      console.warn('Image loading error')
     },
   },
 

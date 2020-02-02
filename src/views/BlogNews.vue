@@ -148,8 +148,6 @@ export default {
     },
 
     saveNewsContent() {
-      /* eslint-disable-next-line */
-      console.log('NEWS CONTENT:\n', this.newsContent)
       this.$store.dispatch('news/SAVE_NEWS', this.newsContent)
         .then(
           () => {},

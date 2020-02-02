@@ -186,7 +186,6 @@ export default {
   },
   mounted() {
     this.$store.dispatch('blog/GET_CONTENT')
-    this.$store.dispatch('blog/GET_CONTENT')
       .then(() => {
         this.imagesEndpoint = this.$store.getters['blog/imagesEndpoint']
         this.avatarsEndpoint = this.$store.getters['blog/avatarsEndpoint']

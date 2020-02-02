@@ -3,6 +3,11 @@
   <v-dialog v-model="dialog" fullscreen hide-overlay transition="dialog-bottom-transition">
     <v-card v-if="pictures" class="pa-4" v-resize="onResize">
       <v-toolbar dark color="secondary">
+        <v-toolbar-items>
+          <v-btn icon @click="getImages()">
+            <v-icon large color="#555">mdi-reload</v-icon>
+          </v-btn>
+        </v-toolbar-items>
         <v-toolbar-title>Select logo picture from below</v-toolbar-title>
         <v-spacer></v-spacer>
           <v-toolbar-items>
@@ -35,12 +40,24 @@
       </v-row>
     </v-card>
   </v-dialog>
+
+  <RemovePopup :visibility.sync="removePopupVisible"
+               :confirm.sync="confirmRemoving"
+               removing="Image"
+               :details="details"
+  />
 </v-row>
 </template>
 
 <script>
+
+import RemovePopup from '@/components/RemovePopup.vue'
+
 export default {
   name: 'ImageGallery',
+  components: {
+    RemovePopup,
+  },
   props: {
     dialog: Boolean,
     logo: String,
@@ -60,10 +77,25 @@ export default {
   data: () => ({
     pictures: null,
     sm: 4,
+    removePopupVisible: false,
+    confirmRemoving: false,
+    details: null,
+    removing: null,
   }),
 
   watch: {
-    //
+    confirmRemoving(val) {
+      if (!val) return
+      try {
+        fetch(`${this.endpoint}/${this.pictures[this.removing]}`, {
+          method: 'DELETE',
+        }).then(() => { this.pictures.splice(this.removing, 1) })
+      } catch (error) {
+        const moduleName = this.endpoint.match('news') ? 'news' : 'blog'
+        this.$store.dispatch('TRACE_ERROR', { moduleName, error })
+      }
+      this.removePopupVisible = false
+    },
   },
 
   methods: {
@@ -77,20 +109,11 @@ export default {
     onResize() {
       this.sm = Math.round(32 / Math.round(window.innerWidth / this.maxWidth))
     },
-    async removePicture(index) {
-      try {
-        await fetch(`${this.endpoint}/${this.pictures[index]}`, {
-          method: 'DELETE',
-        })
-        /* eslint-disable-next-line */
-        console.log(this.pictures)
-        this.pictures.splice(index, 1)
-        /* eslint-disable-next-line */
-        console.log(this.pictures)
-      } catch (error) {
-        const moduleName = this.endpoint.match('news') ? 'news' : 'blog'
-        this.$store.dispatch('TRACE_ERROR', { moduleName, error })
-      }
+    removePicture(index) {
+      this.confirmRemoving = false
+      this.removing = index
+      this.details = `<img src="${this.endpoint}/${this.pictures[index]}" width="100"/>`
+      this.removePopupVisible = true
     },
     selectPicture(index) {
       this.$store.commit('SET_SELECTED_LOGO', this.pictures[index])
