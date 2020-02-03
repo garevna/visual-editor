@@ -99,7 +99,7 @@ export default {
 
     addListenersOnMarkerForRightclick(marker, id) {
       window.google.maps.event.addListener(marker, 'rightclick', () => {
-        if (this.deleteActivated) {
+        if (this.deleteActivated && !this.selectedMarkerId) {
           marker.setAnimation(window.google.maps.Animation.BOUNCE)
           this.selectedMarker = marker
           this.selectedMarkerId = id
