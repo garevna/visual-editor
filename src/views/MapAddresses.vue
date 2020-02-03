@@ -82,12 +82,12 @@ export default {
 
   methods: {
 
-    // showData() {
-    //   console.log('%c addingMarker: ', 'color: #1B5E20; font-weight: bold;', this.addingMarker)
-    //   console.log('%c stateMarkers: ', 'color: #FF6F00; font-weight: bold;', this.stateMarkers)
-    //   console.log('%c initialServerMarkers: ', 'color: #FF6F00; font-weight: bold;', this.initialServerMarkers)
-    //   console.log('%c states are equal: ', 'color: #FF6;', JSON.stringify(this.initialServerMarkers) === JSON.stringify(this.stateMarkers))
-    // },
+    showData() {
+      console.log('%c addingMarker: ', 'color: #1B5E20; font-weight: bold;', this.addingMarker)
+      console.log('%c stateMarkers: ', 'color: #FF6F00; font-weight: bold;', this.stateMarkers)
+      console.log('%c initialServerMarkers: ', 'color: #FF6F00; font-weight: bold;', this.initialServerMarkers)
+      console.log('%c states are equal: ', 'color: #FF6;', JSON.stringify(this.initialServerMarkers) === JSON.stringify(this.stateMarkers))
+    },
 
     checkApplyButton() {
       return (JSON.stringify(this.stateMarkers) === JSON.stringify(this.initialServerMarkers))
@@ -228,10 +228,14 @@ export default {
     },
 
     addMarker() {
-      this.stateMarkers[this.addingMarkerId] = this.addingMarker[this.addingMarkerId]
-      this.searchInput.value = ''
-      this.addingMarker = {}
-      this.addingMarkerId = ''
+      if (this.addingMarker[this.addingMarkerId]) {
+        this.stateMarkers[this.addingMarkerId] = this.addingMarker[this.addingMarkerId]
+        this.searchInput.value = ''
+        this.addingMarker = {}
+        this.addingMarkerId = ''
+      } else {
+        alert('Nothing to add, please make sure that you added marker!')
+      }
     },
 
     deleteMarker() {
