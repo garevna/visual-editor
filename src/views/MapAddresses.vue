@@ -28,6 +28,10 @@
       <v-card flat class="pa-4" max-width="220px">
         <v-btn  width="100%" @click="showData">Show state data</v-btn>
       </v-card>
+
+      <v-card flat class="pa-4" max-width="220px">
+        <v-btn  width="100%" @click="test">Test</v-btn>
+      </v-card>
     </v-row>
 
   </v-container>
@@ -73,6 +77,11 @@ export default {
   },
 
   methods: {
+    async test() {
+      console.log(this.stateMarkers)
+      this.$store.commit('map/MAP_POINTS', this.stateMarkers)
+      this.$store.dispatch('map/WRITE_POINTS')
+    },
 
     showData() {
       console.log('%c addingMarker: ', 'color: #1B5E20; font-weight: bold;', this.addingMarker)

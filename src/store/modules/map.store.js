@@ -10,6 +10,7 @@ const state = {
 const getters = {
   pointsEndpoint: (state, getters, rootState, rootGetters) => `${rootState.host}/map/points`,
   polygonsEndpoint: (state, getters, rootState, rootGetters) => `${rootState.host}/map/polygons`,
+  markersEndpoint: (state, getters, rootState, rootGetters) => `${rootState.host}/map/markers`,
 }
 
 const mutations = {
@@ -27,6 +28,35 @@ const actions = {
     commit('MAP_POLYGONS', polygons)
     return true
   },
+  /* eslint-disable no-console */
+  async WRITE_FILE({ getters, commit }, { filePath, fileContent }) {
+    const formData = new FormData()
+    formData.set('content', JSON.stringify(fileContent))
+    const response = await (
+      fetch(filePath, {
+        method: 'POST',
+        body: formData,
+      }).catch(err => console.warn(err))
+    )
+    return response
+  },
+
+  async WRITE_POINTS({ state, getters, dispatch }) {
+    const response = await dispatch('WRITE_FILE', {
+      filePath: `${getters.markersEndpoint}/points.json`,
+      fileContent: state.points,
+    })
+    console.log(response)
+  },
+
+  async WRITE_POLYGONS({ state, getters, dispatch }) {
+    const response = await dispatch('WRITE_FILE', {
+      filePath: `${getters.markersEndpoint}/polygons.json`,
+      fileContent: state.polygons,
+    })
+    console.log(response)
+  },
+
   async SAVE_POLYGONS({ getters, commit }, polygons) {
     const response = await fetch(getters.polygonsEndpoint, {
       method: 'POST',
