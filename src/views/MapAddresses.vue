@@ -9,7 +9,7 @@
         </v-btn>
         <v-text-field label="Address" single-line outlined ref="address" :disabled="!addActivated"/>
         <v-btn width="100%" color="primary" class="mb-4" ref="search" :disabled="!addActivated">Search</v-btn>
-        <v-btn width="100%" color="success" :disabled="!addActivated" @click="addMarker">Add marker</v-btn>
+        <v-btn width="100%" color="success" :disabled="!addingMarkerBuffer" @click="addMarker">Add marker</v-btn>
       </v-card>
 
        <v-card flat class="pa-4 align-self-stretch d-flex flex-column justify-space-between" width="260px">
@@ -19,13 +19,13 @@
         <v-btn width="100%" color="error" :disabled="!deleteActivated" @click="deleteMarker">Delete marker</v-btn>
       </v-card>
 
-      <v-card flat class="pa-4" max-width="220px">
-        <!-- <v-btn width="100%" class="mb-4" @click="showInfo">{{infoShown ? "Close info" : "Show info"}}</v-btn> -->
+      <v-card flat class="pa-4 align-self-stretch d-flex flex-column justify-space-between" max-width="220px">
+        <v-btn width="100%" class="mb-4" @click="dialog=true">Instruction</v-btn>
         <!-- <v-btn width="100%" color="accent" :disabled="deleteActivated || checkApplyButton()" @click="applyChanges">Apply changes</v-btn> -->
         <v-btn width="100%" color="accent" @click="applyChanges">Apply changes</v-btn>
       </v-card>
 
-      <v-card flat class="pa-4" max-width="220px">
+      <!-- <v-card flat class="pa-4" max-width="220px">
         <v-btn  width="100%" @click="showData">Show state data</v-btn>
       </v-card>
 
@@ -34,22 +34,30 @@
       </v-card>
     </v-row>
 
+    <InstructionForMarkers :dialog.sync="dialog"/>
+
   </v-container>
 </template>
 
 <script>
 /* eslint-disable no-unused-vars */
-/* eslint-disable no-console */
 
 import { mapGetters } from 'vuex'
 
 import mapConfigs from '@/configs/map'
 
-const arr = require('../store/modules/markers.json')
+import InstructionForMarkers from '@/components/InstructionForMarkers.vue'
+
+const initialMarkers = require('../storage/markers.json')
 
 export default {
+  components: {
+    InstructionForMarkers,
+  },
   data() {
     return {
+      dialog: false,
+
       place: { lat: -37.85013628, lng: 144.953058 },
 
       map: null,
@@ -58,6 +66,7 @@ export default {
       deleteActivated: false,
 
       addingMarker: {},
+      addingMarkerBuffer: null,
       addingMarkerId: '',
 
       selectedMarker: null,
@@ -100,7 +109,7 @@ export default {
 
     addListenersOnMarkerForRightclick(marker, id) {
       window.google.maps.event.addListener(marker, 'rightclick', () => {
-        if (this.deleteActivated) {
+        if (this.deleteActivated && !this.selectedMarkerId) {
           marker.setAnimation(window.google.maps.Animation.BOUNCE)
           this.selectedMarker = marker
           this.selectedMarkerId = id
@@ -158,6 +167,7 @@ export default {
           const geo = place.geometry.location
           bounds.extend(geo)
           marker.setPosition(geo)
+          this.addingMarkerBuffer = marker
           map.fitBounds(bounds)
           map.setZoom(15)
           let address = []
@@ -186,6 +196,7 @@ export default {
               if (status == 'OK') {
                 bounds.extend(geo)
                 marker.setPosition(geo)
+                this.addingMarkerBuffer = marker
                 map.fitBounds(bounds)
                 map.setZoom(15)
                 let addressLocal = []
@@ -214,6 +225,7 @@ export default {
             const geo = place.geometry.location
             // eslint-disable-next-line eqeqeq
             if (status == 'OK') {
+              this.addingMarkerBuffer = e
               let addressLocal = []
               place.address_components.forEach(obj => addressLocal.push(obj.long_name))
               addressLocal = addressLocal.join(',')
@@ -229,10 +241,16 @@ export default {
     },
 
     addMarker() {
-      this.stateMarkers[this.addingMarkerId] = this.addingMarker[this.addingMarkerId]
-      this.searchInput.value = ''
-      this.addingMarker = {}
-      this.addingMarkerId = ''
+      if (this.addingMarker[this.addingMarkerId]) {
+        this.addListenersOnMarkerForRightclick(this.addingMarkerBuffer, this.addingMarkerId)
+        this.stateMarkers[this.addingMarkerId] = this.addingMarker[this.addingMarkerId]
+        this.addingMarkerBuffer = null
+        this.searchInput.value = ''
+        this.addingMarker = {}
+        this.addingMarkerId = ''
+      } else {
+        alert('Nothing to add, please make sure that you added marker!')
+      }
     },
 
     deleteMarker() {
@@ -271,7 +289,8 @@ export default {
       this.stateMarkers = {}
       this.initialServerMarkers = {}
 
-      await this.$store.dispatch('map/SAVE_POINTS', result)
+      await this.$store.dispatch('map/SAVE_POINTS', initialMarkers)
+      // await this.$store.dispatch('map/SAVE_POINTS', result)
       this.initMap()
     },
   },
