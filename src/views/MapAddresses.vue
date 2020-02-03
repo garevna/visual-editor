@@ -21,7 +21,7 @@
 
       <v-card flat class="pa-4 align-self-stretch d-flex flex-column justify-space-between" max-width="220px">
         <v-btn width="100%" class="mb-4" @click="dialog=true">Instruction</v-btn>
-        <v-btn width="100%" color="accent" :disabled="deleteActivated || checkApplyButton()" @click="applyChanges">Apply changes</v-btn>
+        <v-btn width="100%" color="accent" :disabled="deleteActivated || addActivated || checkApplyButton()" @click="applyChanges">Apply changes</v-btn>
         <!-- <v-btn width="100%" color="accent" @click="applyChanges">Apply changes</v-btn> -->
       </v-card>
 
