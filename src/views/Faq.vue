@@ -8,9 +8,11 @@
       >
         <v-list v-if="faqContent">
           <v-subheader>
-              <v-icon large color="#09b" @click="createNewQuestion">
-                mdi-new-box
-              </v-icon>
+            <h3>FAQ</h3>
+            <v-spacer/>
+            <v-icon large color="#09b" @click="createNewQuestion">
+              mdi-new-box
+            </v-icon>
           </v-subheader>
           <v-list-item-group v-model="questionIndex" color="primary">
             <v-list-item
@@ -18,7 +20,7 @@
               :key="index"
             >
               <v-list-item-icon>
-                <v-icon color="success">{{ 'mdi-pencil' }}</v-icon>
+                <v-icon color="info">{{ 'mdi-pencil' }}</v-icon>
               </v-list-item-icon>
               <v-list-item-content v-if="item">
                 <v-list-item-title v-text="item.question">
@@ -33,6 +35,8 @@
       <FaqQuestion v-if="testIndex()" :index="questionIndex"/>
 
       <v-bottom-navigation v-model="bottomNav" app fixed>
+        <v-btn disabled><h3>FAQ</h3></v-btn>
+        <v-spacer/>
         <v-tooltip top>
           <template v-slot:activator="{ on }">
             <v-btn @click="navigate=true" v-on="on">

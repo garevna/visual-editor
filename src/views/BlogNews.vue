@@ -8,9 +8,11 @@
       >
         <v-list v-if="keys">
           <v-subheader>
-              <v-icon large color="#09b" @click="newArticle">
-                mdi-new-box
-              </v-icon>
+            <h3 color="primary">DGTek in media</h3>
+            <v-spacer/>
+            <v-icon large color="#09b" @click="newArticle">
+              mdi-new-box
+            </v-icon>
           </v-subheader>
           <v-list-item-group v-model="articleId" color="primary">
             <v-list-item
@@ -19,7 +21,7 @@
               :value="id"
             >
               <v-list-item-icon>
-                <v-icon color="success">{{ 'mdi-link-box-variant' }}</v-icon>
+                <v-icon color="info">{{ 'mdi-link-box-variant' }}</v-icon>
               </v-list-item-icon>
               <v-list-item-content>
                 <v-list-item-title v-text="newsContent[id].title"></v-list-item-title>
@@ -45,6 +47,8 @@
         app
         fixed
       >
+        <v-btn disabled><h3>DGTek in media</h3></v-btn>
+        <v-spacer/>
         <v-tooltip top>
           <template v-slot:activator="{ on }">
             <v-btn @click="navigate=true" v-on="on">

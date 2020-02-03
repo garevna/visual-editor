@@ -8,9 +8,11 @@
       >
         <v-list v-if="keys">
           <v-subheader>
-              <v-icon large color="#09b" @click="createNewArticle">
+            <h3>BLOG</h3>
+            <v-spacer/>
+            <v-icon large color="#09b" @click="createNewArticle">
                 mdi-new-box
-              </v-icon>
+            </v-icon>
           </v-subheader>
           <v-list-item-group v-model="articleId" color="primary">
             <v-list-item
@@ -19,7 +21,7 @@
               :value="id"
             >
               <v-list-item-icon>
-                <v-icon color="success">{{ 'mdi-pencil' }}</v-icon>
+                <v-icon color="info">{{ 'mdi-pencil' }}</v-icon>
               </v-list-item-icon>
               <v-list-item-content v-if="blogContent[id]">
                 <v-list-item-title v-text="blogContent[id].title">
@@ -53,6 +55,8 @@
         app
         fixed
       >
+        <v-btn disabled><h3>BLOG</h3></v-btn>
+        <v-spacer/>
         <v-tooltip top>
           <template v-slot:activator="{ on }">
             <v-btn @click="navigate=true" v-on="on">
