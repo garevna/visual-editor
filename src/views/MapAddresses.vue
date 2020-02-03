@@ -9,7 +9,7 @@
         </v-btn>
         <v-text-field label="Address" single-line outlined ref="address" :disabled="!addActivated"/>
         <v-btn width="100%" color="primary" class="mb-4" ref="search" :disabled="!addActivated">Search</v-btn>
-        <v-btn width="100%" color="success" :disabled="!addActivated" @click="addMarker">Add marker</v-btn>
+        <v-btn width="100%" color="success" :disabled="!addingMarkerBuffer" @click="addMarker">Add marker</v-btn>
       </v-card>
 
        <v-card flat class="pa-4 align-self-stretch d-flex flex-column justify-space-between" width="260px">
@@ -62,6 +62,7 @@ export default {
       deleteActivated: false,
 
       addingMarker: {},
+      addingMarkerBuffer: null,
       addingMarkerId: '',
 
       selectedMarker: null,
@@ -157,6 +158,7 @@ export default {
           const geo = place.geometry.location
           bounds.extend(geo)
           marker.setPosition(geo)
+          this.addingMarkerBuffer = marker
           map.fitBounds(bounds)
           map.setZoom(15)
           let address = []
@@ -185,6 +187,7 @@ export default {
               if (status == 'OK') {
                 bounds.extend(geo)
                 marker.setPosition(geo)
+                this.addingMarkerBuffer = marker
                 map.fitBounds(bounds)
                 map.setZoom(15)
                 let addressLocal = []
@@ -213,6 +216,7 @@ export default {
             const geo = place.geometry.location
             // eslint-disable-next-line eqeqeq
             if (status == 'OK') {
+              this.addingMarkerBuffer = e
               let addressLocal = []
               place.address_components.forEach(obj => addressLocal.push(obj.long_name))
               addressLocal = addressLocal.join(',')
@@ -229,7 +233,9 @@ export default {
 
     addMarker() {
       if (this.addingMarker[this.addingMarkerId]) {
+        this.addListenersOnMarkerForRightclick(this.addingMarkerBuffer, this.addingMarkerId)
         this.stateMarkers[this.addingMarkerId] = this.addingMarker[this.addingMarkerId]
+        this.addingMarkerBuffer = null
         this.searchInput.value = ''
         this.addingMarker = {}
         this.addingMarkerId = ''
