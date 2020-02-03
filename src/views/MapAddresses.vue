@@ -19,8 +19,8 @@
         <v-btn width="100%" color="error" :disabled="!deleteActivated" @click="deleteMarker">Delete marker</v-btn>
       </v-card>
 
-      <v-card flat class="pa-4" max-width="220px">
-        <!-- <v-btn width="100%" class="mb-4" @click="showInfo">{{infoShown ? "Close info" : "Show info"}}</v-btn> -->
+      <v-card flat class="pa-4 align-self-stretch d-flex flex-column justify-space-between" max-width="220px">
+        <v-btn width="100%" class="mb-4" @click="dialog=true">Instruction</v-btn>
         <!-- <v-btn width="100%" color="accent" :disabled="deleteActivated || checkApplyButton()" @click="applyChanges">Apply changes</v-btn> -->
         <v-btn width="100%" color="accent" @click="applyChanges">Apply changes</v-btn>
       </v-card>
@@ -29,6 +29,8 @@
         <v-btn  width="100%" @click="showData">Show state data</v-btn>
       </v-card> -->
     </v-row>
+
+    <InstructionForMarkers :dialog.sync="dialog"/>
 
   </v-container>
 </template>
@@ -40,11 +42,18 @@ import { mapGetters } from 'vuex'
 
 import mapConfigs from '@/configs/map'
 
+import InstructionForMarkers from '@/components/InstructionForMarkers.vue'
+
 const initialMarkers = require('../storage/markers.json')
 
 export default {
+  components: {
+    InstructionForMarkers,
+  },
   data() {
     return {
+      dialog: false,
+
       place: { lat: -37.85013628, lng: 144.953058 },
 
       map: null,
@@ -261,8 +270,8 @@ export default {
       this.stateMarkers = {}
       this.initialServerMarkers = {}
 
-      // await this.$store.dispatch('map/SAVE_POINTS', initialMarkers)
-      await this.$store.dispatch('map/SAVE_POINTS', result)
+      await this.$store.dispatch('map/SAVE_POINTS', initialMarkers)
+      // await this.$store.dispatch('map/SAVE_POINTS', result)
       this.initMap()
     },
   },
