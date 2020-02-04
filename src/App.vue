@@ -1,10 +1,6 @@
 <template>
   <v-app>
-    <v-app-bar
-      app
-      color="secondary"
-      dark
-    >
+    <v-app-bar app color="secondary" dark>
       <div class="d-flex align-center">
         <v-img
           alt="DGTek Logo"
@@ -15,21 +11,14 @@
           width="50"
         />
 
-        <v-btn
-          @click="goHome"
-          text
-        >
+        <v-btn @click="goHome" text>
           <span class="mr-2">Admin</span>
         </v-btn>
       </div>
 
       <v-spacer></v-spacer>
 
-      <v-btn
-        href="https://dgtek.net/"
-        target="_blank"
-        text
-      >
+      <v-btn href="https://dgtek.net/" target="_blank" text>
         <span class="mr-2">View result</span>
         <v-icon>mdi-open-in-new</v-icon>
       </v-btn>
@@ -42,7 +31,6 @@
 </template>
 
 <script>
-
 export default {
   name: 'App',
 
