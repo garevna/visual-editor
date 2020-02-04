@@ -37,15 +37,11 @@
 </template>
 
 <script>
-/* eslint-disable no-unused-vars */
-
 import { mapGetters } from 'vuex'
 
 import mapConfigs from '@/configs/map'
 
 import InstructionForMarkers from '@/components/InstructionForMarkers.vue'
-
-const initialMarkers = require('../storage/markers.json')
 
 export default {
   components: {
@@ -126,7 +122,7 @@ export default {
         const address = e.feature.getProperty('address')
         const geo = e.feature.getGeometry()
         let coordinates
-        const paths = geo.forEachLatLng((elem) => { coordinates = [+elem.lat().toFixed(5), +elem.lng().toFixed(5)] })
+        geo.forEachLatLng((elem) => { coordinates = [+elem.lat().toFixed(5), +elem.lng().toFixed(5)] })
         this.stateMarkers[id] = { address, coordinates }
         this.initialServerMarkers[id] = { address, coordinates: [...coordinates] }
         const marker = new window.google.maps.Marker({
@@ -240,8 +236,6 @@ export default {
         this.searchInput.value = ''
         this.addingMarker = {}
         this.addingMarkerId = ''
-      } else {
-        alert('Nothing to add, please make sure that you added marker!')
       }
     },
 

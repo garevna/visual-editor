@@ -22,7 +22,7 @@
             <p>Click the "ACTIVATE ADD MODE" button.</p>
             <p>"Service available" and "Build commenced" radio buttons will appear, also there will appear drawing tools panel (in the bottom left corner of the map).</p>
             <p>Select the option you need, select the polygon tool then. On map's hover cursor appearance will change to cross.</p>
-            <p>Then begin to draw (you can make polygon's vertex simply by clicking left mouse button).<b>Pay attention that polygon has to be enclosed</b>, then polygon's background color will change to green.</p>
+            <p>Then begin to draw (you can make polygon's vertex simply by clicking left mouse button).<b>Note that polygon has to be enclosed</b>, then polygon's background color will change to green.</p>
             <p>Click the "ADD POLYGON" button when finished drawing a polygon. Button will be available only when it is enclosed and one of checkboxes is marked ("Service Available" or "Build Commenced").</p>
             <p><b class="mb-5">After drawing polygon click the "ADD POLYGON" button, and only then start to draw another one!</b></p>
             <p>Pressing the "ADD POLYGON" button will change it's background color depending on selected polygon's type.</p>

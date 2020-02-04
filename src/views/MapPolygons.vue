@@ -340,9 +340,6 @@ export default {
         if (editedId) {
           this.serverPolygonsCommenced[editedId] = this.editedPolygonCommenced[editedId]
         }
-      } else {
-        // eslint-disable-next-line no-alert
-        alert("Click on the edited polygon before hitting 'Edit polygon' button, or click right mouse button to cancel editing this polygon")
       }
     },
 
@@ -361,14 +358,10 @@ export default {
         this.deletedPolygonBufferCommenced = null
         delete this.serverPolygonsCommenced[this.deletedPolygonCommenced]
         this.deletedPolygonCommenced = ''
-      } else {
-        // eslint-disable-next-line no-alert
-        alert("Click on the polygon you want to delete before hitting 'Delete polygon' button, or click right mouse button to cancel deleting this polygon")
       }
     },
 
     async applyChanges() {
-      // this.structureToSend.features
       const availArr = Object.keys(this.serverPolygonsAvailable).map(id => ({
         type: 'Feature',
         properties: {
