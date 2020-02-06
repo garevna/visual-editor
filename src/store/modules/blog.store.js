@@ -3,21 +3,25 @@
 /* eslint-disable no-shadow */
 
 const state = {
-  content: null,
+  blogContent: null,
   contentChanged: false,
   startTime: new Date().getTime(),
+  defaultPicture: 'default.jpg',
+  defaultAvatar: 'default.png',
 }
 
 const getters = {
   contentEndpoint: (state, getters, rootState) => `${rootState.host}/blog/content`,
   imagesEndpoint: (state, getters, rootState) => `${rootState.host}/blog/images`,
   avatarsEndpoint: (state, getters, rootState) => `${rootState.host}/blog/avatars`,
+  pictureURL: (state, getters) => id => `${getters.imagesEndpoint}/${state.blogContent[id].picture || state.defaultPicture}`,
+  avatarURL: (state, getters) => id => `${getters.avatarsEndpoint}/${state.blogContent[id].author_ava || state.defaultAvatar}`,
 }
 
 const mutations = {
 
   UPDATE_CONTENT: (state, content) => {
-    state.content = JSON.parse(JSON.stringify(content))
+    state.blogContent = JSON.parse(JSON.stringify(content))
   },
 
 }
@@ -36,18 +40,18 @@ const actions = {
     dispatch,
   }, id) {
     /* eslint-disable camelcase */
-    const { file, picture, author_ava } = state.content[id]
+    const { file, picture, author_ava } = state.blogContent[id]
 
     if (file) await dispatch('REMOVE_FILE', `${getters.contentEndpoint}/${file}`)
     // if (picture) await dispatch('REMOVE_FILE', `${getters.imagesEndpoint}/${picture}`)
     // if (author_ava) await dispatch('REMOVE_FILE', `${getters.avatarsEndpoint}/${author_ava}`)
 
     commit('DELETE_PROPERTY', {
-      object: state.content,
+      object: state.blogContent,
       propertyName: id,
     }, { root: true })
 
-    await dispatch('SAVE_CONTENT')
+    dispatch('SAVE_BLOG_CONTENT', state.blogContent)
     return true
   },
 
@@ -62,7 +66,7 @@ const actions = {
     )
   },
 
-  async GET_CONTENT({
+  async GET_BLOG_CONTENT({
     state,
     getters,
     commit,
@@ -70,10 +74,10 @@ const actions = {
   }) {
     const content = await (await fetch(getters.contentEndpoint)).json()
     commit('UPDATE_CONTENT', content)
-    return state.content
+    return state.blogContent
   },
 
-  async SAVE_CONTENT({
+  async SAVE_BLOG_CONTENT({
     state,
     getters,
     commit,
@@ -84,17 +88,17 @@ const actions = {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(state.content),
+      body: JSON.stringify(state.blogContent),
     }).catch(error => dispatch('TRACE_ERROR', error, { root: true }))
 
     state.contentChanged = false
     state.startTime = new Date().getTime()
-    return state.content
+    return state.blogContent
   },
 
   async GET_ARTICLE_BY_ID({ state, dispatch }, id) {
     if (!state.content) await dispatch('GET_CONTENT')
-    return state.content[id]
+    return state.blogContent[id]
   },
 
   async SAVE_ARTICLE_CONTENT({ getters, dispatch }, payload) {

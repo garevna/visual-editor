@@ -2,7 +2,6 @@
   <v-container>
     <v-card flat class="pt-4" id="map" min-height="60vh"/>
     <v-row class="justify-space-between align-end">
-
       <v-card flat class="flex-grow-1 pa-4">
         <v-btn width="100%" class="mb-4" color="info" :disabled="deleteActivated" @click="activateAddMode">
           {{addActivated ? "Deactivate add mode" : "Activate add mode"}}
@@ -25,13 +24,14 @@
         <v-btn width="100%" color="accent" @click="applyChanges">Apply changes</v-btn>
       </v-card>
 
-      <!-- <v-card flat class="pa-4" max-width="220px">
+      <v-card flat class="pa-4" max-width="220px">
         <v-btn  width="100%" @click="showData">Show state data</v-btn>
       </v-card>
 
       <v-card flat class="pa-4" max-width="220px">
         <v-btn  width="100%" @click="test">Test</v-btn>
       </v-card>
+
     </v-row>
 
     <InstructionForMarkers :dialog.sync="dialog"/>
@@ -41,6 +41,7 @@
 
 <script>
 /* eslint-disable no-unused-vars */
+/* eslint-disable no-console */
 
 import { mapGetters } from 'vuex'
 
@@ -249,7 +250,7 @@ export default {
         this.addingMarker = {}
         this.addingMarkerId = ''
       } else {
-        alert('Nothing to add, please make sure that you added marker!')
+        console.warn('Nothing to add, please make sure that you added marker!')
       }
     },
 

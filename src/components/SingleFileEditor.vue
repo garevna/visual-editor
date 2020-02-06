@@ -2,7 +2,7 @@
   <v-container>
     <v-card class="pa-0" width="80%" flat>
       <v-card-actions>
-        <v-btn @click="$emit('input', content)" text>
+        <v-btn @click="$emit('text-changed', content)" text>
           SAVE
         </v-btn>
       </v-card-actions>
@@ -31,7 +31,7 @@ export default {
 
   data: () => ({
     container: null,
-    content: null,
+    content: '',
   }),
   computed: {
     //

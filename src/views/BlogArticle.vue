@@ -1,153 +1,119 @@
 <template>
-    <v-card flat
-      class="mx-auto my-auto"
-      width="80%"
-      tile
-      v-if="!close && article"
-    >
-      <!-- actions -->
+  <v-container v-if="article">
+    <v-card class="mx-auto" max-width="1000" flat tile v-if="!close && article">
 
-      <v-card-actions>
-        <v-tooltip top>
-          <template v-slot:activator="{ on }">
-            <v-btn text @click="saveArticle" v-on="on">
-              <v-icon large color="info">mdi-content-save</v-icon>
-            </v-btn>
-          </template>
-          <span>Save current article</span>
-        </v-tooltip>
-
-        <v-spacer/>
-
-        <v-tooltip top>
-          <template v-slot:activator="{ on }">
-            <v-btn text @click="removeArticle" v-on="on">
-              <v-icon large color="error">mdi-delete-circle</v-icon>
-            </v-btn>
-          </template>
-          <span>Delete current article</span>
-        </v-tooltip>
-
-      </v-card-actions>
-      <v-divider/>
       <!-- header -->
-
-      <v-card-title>
-        <v-text-field label="Article header" v-model="article.title">
+      <v-card-title class="mx-8 mt-8 mb-0">
+        <v-text-field outlined label="Article header" v-model="article.title">
           <v-icon small slot="append" color="info">mdi-pencil</v-icon>
         </v-text-field>
       </v-card-title>
 
       <!-- content -->
 
-      <v-row>
-        <v-col cols="3">
+      <v-row class="mx-10">
+        <v-col cols="12" sm="6" md="3" lg="3">
           <v-card-text>
-            <v-text-field label="Article date" v-model="article.data">
+            <v-text-field outlined label="Article date" v-model="article.data">
               <v-icon small slot="append" color="info">mdi-pencil</v-icon>
             </v-text-field>
           </v-card-text>
         </v-col>
-        <v-col>
-          <v-card-text v-if="article.type === 'file'">
-            <v-icon small color="warning">mdi-file-document-outline</v-icon> <small>{{article.file}}</small>
-          </v-card-text>
-          <v-card-text v-else>
-            <v-text-field label="Article url" v-model="article.url">
-              <v-icon small slot="append" color="info">mdi-pencil</v-icon>
-            </v-text-field>
-          </v-card-text>
-        </v-col>
-      </v-row>
 
-      <!--  AUTHOR -->
-      <v-card raized>
-        <v-row>
-          <v-col cols="5">
-            <v-card-text>
-              <v-text-field label="Article author" v-model="article.author">
+        <!--  AUTHOR -->
+        <v-col cols="12" sm="6" md="4" lg="4">
+          <v-card-text>
+              <v-text-field outlined label="Article author" v-model="article.author">
                 <v-icon small slot="append" color="info">mdi-pencil</v-icon>
               </v-text-field>
-            </v-card-text>
-          </v-col>
-          <v-col cols="2">
-            <v-card-text raised>
+          </v-card-text>
+        </v-col>
+        <v-col cols="12" sm="4" md="2" lg="1">
+          <v-card-text>
               <v-avatar>
                 <v-img v-if="avatarSrc" :src="avatarSrc" onerror="imageError"></v-img>
               </v-avatar>
-            </v-card-text>
-          </v-col>
-          <v-col>
-            <v-card-text class="pl-10">
-              <v-file-input
+          </v-card-text>
+        </v-col>
+        <v-col cols="12" sm="8" md="3" lg="4">
+            <UploadImage
+                :file.sync="avatar.file"
+                :source.sync="avatar.source"
+                :src.sync="avatar.src"
                 label="Upload author avatar"
-                prepend-icon="mdi-camera"
-                @change="uploadAvatar"
-                v-model="avatar.file"
-                :hint="avatarUploadHint"
-                :error="avatarError"
-              ></v-file-input>
-            </v-card-text>
-          </v-col>
-        </v-row>
-      </v-card>
-
-      <!--  PICTURE  -->
-      <v-card raized>
-        <v-row v-if="article.type === 'file'">
-          <v-col cols="6">
-            <v-card-text class="pr-10">
-              <v-img v-if="pictureSrc" :src="pictureSrc" onerror="imageError"></v-img>
-            </v-card-text>
-          </v-col>
-          <v-col>
-            <v-card-text class="pl-10">
-              <v-file-input
-                label="Upload picture"
-                prepend-icon="mdi-camera"
-                @change="uploadPicture"
-                v-model="picture.file"
-                :hint="pictureUploadHint"
-                :error="pictureError"
-              >
-              </v-file-input>
-            </v-card-text>
-          </v-col>
-        </v-row>
-      </v-card>
-
-      <VueEditor v-if="article.type === 'file'" v-model="content.text"/>
-
-      <RemovePopup :visibility.sync="removePopupVisible"
-                   :confirm.sync="confirmRemoving"
-                   removing="<b>Article</b>"
-                   :details="article.title"
-        />
-
+                limit="avatar.limit"
+                :id="id"
+            />
+        </v-col>
+      </v-row>
     </v-card>
+
+    <!--  PICTURE  -->
+
+    <v-card flat class="mx-auto" max-width="1000">
+      <v-row v-if="article && article.type === 'file'">
+        <v-col cols="12" sm="12" md="9">
+            <v-card-text class="pr-10">
+              <v-img v-if="pictureSrc" :src="pictureSrc" onerror="imageError" height="200" contain class="secondary"></v-img>
+            </v-card-text>
+          </v-col>
+          <v-col cols="12" sm="12" md="3">
+            <UploadImage
+                :file.sync="picture.file"
+                :source.sync="picture.source"
+                :src.sync="picture.src"
+                limit="picture.limit"
+                label='Upload picture'
+                :id="id"
+            />
+          </v-col>
+        </v-row>
+      </v-card>
+
+      <v-card flat class="mx-auto" max-width="1000">
+        <v-card-text v-if="article.type === 'file'">
+            <v-icon small color="warning">mdi-file-document-outline</v-icon> <small>{{article.file}}</small>
+        </v-card-text>
+        <v-card-text v-else>
+            <v-text-field outlined label="Article url" v-model="article.url">
+              <v-icon small slot="append" color="info">mdi-pencil</v-icon>
+            </v-text-field>
+        </v-card-text>
+        <v-card flat class="mx-10">
+          <VueEditor v-if="article.type === 'file'" v-model="textContent.text"/>
+        </v-card>
+      </v-card>
+
+      <ArticleBottom
+          :save.sync="save"
+          :pictureSrc.sync="picture.src"
+          :pictureSource.sync="picture.source"
+          :avatarSrc.sync="avatar.src"
+          :avatarSource.sync="avatar.source"/>
+  </v-container>
 </template>
 
 <script>
 
+import { mapState, mapGetters } from 'vuex'
 import { VueEditor } from 'vue2-editor'
-import RemovePopup from '@/components/RemovePopup.vue'
+
+import UploadImage from '@/components/UploadImage.vue'
+import ArticleBottom from '@/components/ArticleBottom.vue'
+// import RemovePopup from '@/components/RemovePopup.vue'
 
 export default {
   components: {
     VueEditor,
-    RemovePopup,
-  },
-
-  props: {
-    id: {
-      type: String,
-      required: true,
-    },
-    imageFromServer: String,
-    avatarFromServer: String,
+    // RemovePopup,
+    UploadImage,
+    ArticleBottom,
   },
 
   data: () => ({
+    id: null,
+    pictureSrc: '',
+    avatarSrc: '',
     picture: {
       source: 'article',
       file: null,
@@ -160,60 +126,51 @@ export default {
       src: null,
       limit: 50000,
     },
-    content: {
+    textContent: {
       file: null,
       text: '',
       changed: false,
     },
     close: false,
-
+    save: false,
     removePopupVisible: false,
     confirmRemoving: false,
   }),
   computed: {
+    ...mapState('blog', ['blogContent', 'defaultPicture', 'defaultAvatar']),
+    ...mapGetters('blog', ['imagesEndpoint', 'avatarsEndpoint', 'pictureURL', 'avatarURL']),
+
     article() {
-      if (!this.id || !this.$store.state.blog.content) return null
-      return this.$store.state.blog.content[this.id]
+      if (!this.id || !this.blogContent) return null
+      return this.blogContent[this.id]
     },
-    imageEndpoint() {
-      return this.$store.getters['blog/imagesEndpoint']
-    },
-    avatarEndpoint() {
-      return this.$store.getters['blog/avatarsEndpoint']
-    },
-
-    pictureSrc() {
-      if (this.picture.source === 'article' && this.article.picture) return `${this.imageEndpoint}/${this.article.picture}`
-      if (this.picture.source === 'client' && !this.pictureError) return this.picture.src
-      if (this.picture.source === 'server') return `${this.imageEndpoint}/${this.imageFromServer}`
-      return ''
-    },
-    avatarSrc() {
-      if (this.avatar.source === 'article' && this.article.author_ava) return `${this.avatarEndpoint}/${this.article.author_ava}`
-      if (this.avatar.source === 'client' && !this.avatarError) return this.avatar.src
-      if (this.avatar.source === 'server') return `${this.avatarEndpoint}/${this.avatarFromServer}`
-      return ''
-    },
-    pictureUploadHint() {
-      return this.setHint('picture')
-    },
-    avatarUploadHint() {
-      return this.setHint('avatar')
-    },
-    pictureError() { return Boolean(this.pictureUploadHint) },
-    avatarError() { return Boolean(this.avatarUploadHint) },
-
   },
 
   watch: {
     id() {
       this.init()
     },
+    save(val) {
+      if (!val) return
+      this.saveArticle()
+      this.save = false
+    },
+    'picture.src': {
+      handler(val) {
+        if (this.picture.source === 'server') this.pictureSrc = `${this.imagesEndpoint}/${val}`
+        if (this.picture.source === 'client' && !this.pictureError) this.pictureSrc = this.picture.src
+      },
+    },
+    'avatar.src': {
+      handler(val) {
+        if (this.avatar.source === 'server') this.avatarSrc = `${this.avatarsEndpoint}/${val}`
+        if (this.avatar.source === 'client' && !this.avatarError) this.avatarSrc = this.avatar.src
+      },
+    },
     'picture.file': {
       handler(newVal) {
         if (this.picture.error) return
         if (!newVal) this.picture.src = ''
-        else this.picture.source = 'client'
       },
       deep: true,
     },
@@ -221,15 +178,8 @@ export default {
       handler(newVal) {
         if (this.avatar.error) return
         if (!newVal) this.avatar.src = ''
-        else this.avatar.source = 'client'
       },
       deep: true,
-    },
-    imageFromServer() {
-      this.picture.source = 'server'
-    },
-    avatarFromServer() {
-      this.avatar.source = 'server'
     },
 
     confirmRemoving(val) {
@@ -244,44 +194,39 @@ export default {
 
   methods: {
     setPicture(newVal) {
-      this.$set(this.$store.state.blog.content[this.id], 'picture', newVal)
+      this.$set(this.blogContent[this.id], 'picture', newVal)
     },
     setAvatar(newVal) {
-      this.$set(this.$store.state.blog.content[this.id], 'author_ava', newVal)
-    },
-
-    setHint(param) {
-      if (this[param].source !== 'client') return ''
-      if (!this[param].file || !(this[param].file instanceof File)) return ''
-      if (this[param].file.size > this[param].limit) return 'File is too large'
-      if (!this[param].file.type.match(/image/)) return 'Invalid file type'
-      return ''
+      this.$set(this.blogContent[this.id], 'author_ava', newVal)
     },
 
     async init() {
-      this.picture.file = null
-      this.picture.src = ''
+      if (!this.blogContent) await this.$store.dispatch('blog/GET_BLOG_CONTENT')
+      this.id = this.$route.params.article
       this.picture.source = 'article'
-
-      this.avatar.file = null
-      this.avatar.src = ''
       this.avatar.source = 'article'
+      this.picture.file = null
+      this.avatar.file = null
+      this.picture.src = this.defaultPicture
+      this.avatar.src = this.defaultAvatar
+      this.pictureSrc = this.pictureURL(this.id)
+      this.avatarSrc = this.avatarURL(this.id)
 
       if (this.id) {
         if (this.article && this.article.type === 'file') {
-          this.content.file = this.article.file
-          this.content.text = await this.$store.dispatch('blog/GET_ARTICLE_CONTENT', this.article.file)
+          this.textContent.file = this.article.file
+          this.textContent.text = await this.$store.dispatch('blog/GET_ARTICLE_CONTENT', this.article.file)
         }
       }
     },
 
     saveContent() {
       this.$store.dispatch('blog/SAVE_ARTICLE_CONTENT', {
-        fileName: this.content.file,
-        content: this.content.text,
+        fileName: this.textContent.file,
+        content: this.textContent.text,
       })
         .then(
-          () => { this.content.changed = false },
+          () => { this.textContent.changed = false },
           err => this.$store.dispatch('TRACE_ERROR', err),
         )
     },
@@ -298,44 +243,22 @@ export default {
       } catch (err) { return '' }
     },
 
-    uploadImage(param) {
-      if (!this[param].file || this[`${param}Error`]) return
-
-      const reader = new FileReader()
-      reader.onload = function s() {
-        this[param].src = reader.result
-        this[param].source = 'client'
-      }.bind(this)
-      reader.readAsDataURL(this[param].file)
-    },
-
-    uploadPicture() {
-      this.uploadImage('picture')
-    },
-
-    uploadAvatar() {
-      this.uploadImage('avatar')
-    },
-
     async saveArticle() {
       if (this.picture.source === 'client') this.$set(this.article, 'picture', this.picture.file ? await this.savePicture() : '')
-      if (this.picture.source === 'server') this.$set(this.article, 'picture', this.imageFromServer)
+      if (this.picture.source === 'server') this.$set(this.article, 'picture', this.picture.src)
 
       if (this.avatar.source === 'client') this.$set(this.article, 'author_ava', this.avatar.file ? await this.saveAvatar() : '')
-      if (this.avatar.source === 'server') this.$set(this.article, 'author_ava', this.avatarFromServer)
+      if (this.avatar.source === 'server') this.$set(this.article, 'author_ava', this.avatar.src)
 
-      this.saveContent(this.content.text)
+      this.saveContent(this.textContent.text)
 
-      this.$store.dispatch('blog/SAVE_CONTENT')
+      await this.$store.dispatch('blog/SAVE_BLOG_CONTENT')
+      this.$router.push({ name: 'blog' })
     },
 
     async removeArticle() {
       this.confirmRemoving = false
       this.removePopupVisible = true
-    },
-    imageError() {
-      /* eslint-disable no-console */
-      console.warn('Image loading error')
     },
   },
 

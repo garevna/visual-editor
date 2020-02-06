@@ -8,7 +8,7 @@
             <v-icon large color="#555">mdi-reload</v-icon>
           </v-btn>
         </v-toolbar-items>
-        <v-toolbar-title>Select logo picture from below</v-toolbar-title>
+        <v-toolbar-title>Select image from below</v-toolbar-title>
         <v-spacer></v-spacer>
           <v-toolbar-items>
             <v-btn dark text @click="$emit('update:dialog', false)">Close</v-btn>
@@ -32,7 +32,8 @@
                    :max-height="maxHeight"
                    :max-width="maxWidth"
                    contain
-                   @click="$emit('update:logo', pictures[index])"
+                   v-model="img"
+                   @click="select(index)"
             />
             </v-card-text>
           </v-card>
@@ -50,6 +51,7 @@
 </template>
 
 <script>
+/* eslint-disable no-console */
 
 import RemovePopup from '@/components/RemovePopup.vue'
 
@@ -60,21 +62,22 @@ export default {
   },
   props: {
     dialog: Boolean,
-    logo: String,
+    image: String,
     endpoint: {
       type: String,
       required: true,
     },
     maxWidth: {
-      type: Number,
+      type: [Number, String],
       default: 150,
     },
     maxHeight: {
-      type: Number,
+      type: [Number, String],
       default: 100,
     },
   },
   data: () => ({
+    img: null,
     pictures: null,
     sm: 4,
     removePopupVisible: false,
@@ -84,6 +87,9 @@ export default {
   }),
 
   watch: {
+    img(val) {
+      console.log(val)
+    },
     confirmRemoving(val) {
       if (!val) return
       try {
@@ -99,6 +105,11 @@ export default {
   },
 
   methods: {
+    select(index) {
+      console.log(index)
+      this.$emit('update:image', this.pictures[index])
+      this.$emit('update:dialog', false)
+    },
     async getImages() {
       const images = await (await fetch(this.endpoint)).json()
       this.pictures = images.filter(img => img.match(/upload_/))
