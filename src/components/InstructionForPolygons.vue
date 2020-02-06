@@ -14,48 +14,48 @@
     <v-card class="pa-4">
       <v-card-title><h3>Important notes</h3></v-card-title>
         <v-card-text class='pa-4'>
-        <p>При выборе любого из режимов (добавление, редактирование, удаление) остальные режимы будут недоступны, пока не завершится текущее действие!</p>
-        <p class="mb-8">Также кнопка "APPLY CHANGES" не будет активна, если не было произведено никаких изменений (состояние данных на сервере соответсвует текущему, отрисованному на карте).</p>
+        <p>If one of editing modes is selected (add, edit, delete) then the rest of it won't be availble until the existing action is in progress!</p>
+        <p class="mb-8">If there were no changes (current data and server data states are equal), "APPLY CHANGES" button also won't be available.</p>
         <ol>
           <li class="mb-8">
             <h3 class="mb-2">Adding polygon</h3>
-            <p>Нажмите кнопку "ACTIVATE ADD MODE".</p>
-            <p>Появятся два радиобаттона "Service available" и "Build commenced", также появится окно с выбором инструмента для рисования (левый нижний угол карты).</p>
-            <p>Отметьте нужный радиобаттон, выберите инструмент рисования полигонов (значок полигона справа от значка руки). При наведении на карту курсор должен поменять свой вид на перекрестие.</p>
-            <p>Далее начните рисование (клик левой кнопкой мыши поставит вершину полигона).<b> Обратите внимание, что полигон должен быть замкнутым,</b> об этом будет свидетельствовать появление зеленого цвета заливки полигона.</p>
-            <p>Когда полигон был успешно отрисован, нажмите кнопку "ADD POLYGON". Кнопка будет доступна только в случае если полигон замкнут и отмечен один из чекбоксов с типом полигона ("Service Available" or "Build Commenced").</p>
-            <p><b class="mb-5">После отрисовки полигона обязательно нажмите кнопку "ADD POLYGON", и только потом переходите к рисованию следующего!</b></p>
-            <p>После нажатия кнопки "ADD POLYGON" добавленный полигон поменяет цвет заливки на цвет соответсвующий его типу.</p>
-            <p>Для выхода из режима редактирования нажмите кнопку "DEACTIVATE ADD MODE". После нажатия обратите внимание, что кнопка "APPLY CHANGES" стала доступна для нажатия</p>
+            <p>Click the "ACTIVATE ADD MODE" button.</p>
+            <p>"Service available" and "Build commenced" radio buttons will appear, also there will appear drawing tools panel (in the bottom left corner of the map).</p>
+            <p>Select the option you need, select the polygon tool then. On map's hover cursor appearance will change to cross.</p>
+            <p>Then begin to draw (you can make polygon's vertex simply by clicking left mouse button).<b>Note that polygon has to be enclosed</b>, then polygon's background color will change to green.</p>
+            <p>Click the "ADD POLYGON" button when finished drawing a polygon. Button will be available only when it is enclosed and one of checkboxes is marked ("Service Available" or "Build Commenced").</p>
+            <p><b class="mb-5">After drawing polygon click the "ADD POLYGON" button, and only then start to draw another one!</b></p>
+            <p>Pressing the "ADD POLYGON" button will change it's background color depending on selected polygon's type.</p>
+            <p>To exit adding mode click the "DEACTIVATE ADD MODE" button. Pay attention that "APPLY CHANGES" button is activated now.</p>
           </li>
           <li class="mb-8">
             <h3 class="mb-2">Editing polygon</h3>
-            <p>Поставьте галочку "Activate edit mode".</p>
-            <p>Нажамите на полигоне который хотите отредактировать левой кнопкой мыши. Цвет заливки полигона станет оранжевым, станут активными вершины и средние точки сторон.</p>
-            <p>Нажмите на активной доступной для редактирования точке и перетащите ее в нужном направлении, удерживая левую кнопку мыши нажатой.</p>
-            <p>Если полигон был выбран для редактирования по ошибке, нажатие на нем правой кнопкой мыши позволит отменить редактирование.<b> Обратите внимание</b> - если были сделаны изменения в текущем полигоне, а после была нажата правая кнопка мыши - изменения не сохраняются для отправки на сервер, но остаются отрисованными на карте до следующего обновления данных на сервере.</p>
-            <p>После того как полигон отредактирован, <b>кликните по нему левой кнопкой мыши</b> и нажмите кнопку "EDIT POLYGON", чтобы применить изменения.</p>
-            <p><b>Также обратите внимание</b>, что можно редактировать только один полигон одновременно.</p>
-            <p><b class="mb-5">Для применения изменений геометрии полигона обязательно нажмите кнопку "EDIT POLYGON", и только потом переходите к редактированию следующего!</b></p>
-            <p>Обратите внимание, что кнопка "APPLY CHANGES" стала доступна для нажатия</p>
+            <p>Check the "Activate edit mode" box.</p>
+            <p>Click left mouse button to select polygon that needs to be edited. Polygon's background color will change to orange, it's vertexes will be editable now.</p>
+            <p>Click on the active editable point and drag it in the desired direction while holding the left mouse button.</p>
+            <p>If the polygon was chosen for editing by mistake, right-clicking on it will cancel the editing.<b> Pay attention</b> - if changes were made in the current polygon, and after the right mouse button was clicked (to cancel the editing), the changes are not saved for sending to the server, but remain drawn on the map until the next data update.</p>
+            <p>After the polygon has been edited, <b> left-click on it </b> and press the "EDIT POLYGON" button to apply the changes.</p>
+            <p><b> Also note </b> that you can only edit one polygon at a time.</p>
+            <p><b class="mb-5">To apply changes to the polygon geometry, be sure to click the "EDIT POLYGON" button, and only then proceed to edit the next one!</b></p>
+            <p>Pay attention that "APPLY CHANGES" button is activated now.</p>
           </li>
           <li class="mb-8">
             <h3 class="mb-2">Deleting polygon</h3>
-            <p>Поставьте галочку "Activate delete mode".</p>
-            <p>Нажамите на полигоне который хотите удалить левой кнопкой мыши, цвет заливки полигона станет красным.</p>
-            <p>Если полигон был выбран для удаления по ошибке, нажатие на нем правой кнопкой мыши позволит отменить выделение.</p>
-            <p>После того как полигон выбран нажмите кнопку "DELETE POLYGON", и выбранный полигон перестанет отображаться на карте.</p>
-            <p><b>Также обратите внимание</b>, что для удаления можно выбрать только один полигон одновременно.</p>
-            <p><b>После выбора полигона обязательно нажмите кнопку "DELETE POLYGON", и только потом переходите к выбору следующего!</b></p>
-            <p>Обратите внимание, что кнопка "APPLY CHANGES" стала доступна для нажатия</p>
+            <p>Check the "Activate delete mode" box.</p>
+            <p>Click on the polygon that you want to delete with the left mouse button, the color of the polygon fill will turn red.</p>
+            <p>If the polygon was selected for deletion by mistake, right-clicking on it will cancel the selection.</p>
+            <p>After the polygon is selected, press the "DELETE POLYGON" button, and the selected polygon will no longer be displayed on the map.</p>
+            <p><b>Also note </b> that only one polygon can be selected for deletion at a time.</p>
+            <p><b>After selecting the polygon, be sure to press the "DELETE POLYGON" button, and only then proceed to the selection of the next one!</b></p>
+            <p>Pay attention that "APPLY CHANGES" button is activated now.</p>
           </li>
           <li class="mb-8">
             <h3 class="mb-2">Applying changes</h3>
-            <p>После того, как были сделаны все необходимые изменения, кнопка "APPLY CHANGES" станет доступной для нажатия.</p>
-            <p><b>Обратите внимание</b>, что кнопка "APPLY CHANGES" активна только в случае, когда не активны режимы редактирования и были внесены какие-то изменения в геометрию полигонов.</p>
-            <p><b>При нажатии "APPLY CHANGES" внесенные изменения будут отправленны на сервер</b></p>
-            <p>Процесс отправки данных занимает какое-то время, на время загрузки поле карты будет недоступно.</p>
-            <p>После успешной отправки данных будет снова отображена карта с актуальной версией полигонов с сервера.</p>
+            <p>After you have made all the changes, "APPLY CHANGES" button will be activated.</p>
+            <p><b>Please note </b> that the "APPLY CHANGES" button is active only when the editing modes are not active and some changes have been made to the geometry of the polygons.</p>
+            <p><b>By clicking the "APPLY CHANGES" button you confirm and send new data to the server.</b></p>
+            <p>Sending data process can take some time, the map won't be available until sending finishes.</p>
+            <p>When data was successfully sent there will be displayed the map with all the changes than you just sent.</p>
           </li>
         </ol>
       </v-card-text>

@@ -14,35 +14,35 @@
     <v-card class="pa-4">
       <v-card-title><h3>Important notes</h3></v-card-title>
         <v-card-text class='pa-4'>
-        <p>При выборе одного из режимов (добавление, удаление) оставшийся режим будут недоступен, пока не завершится текущее действие!</p>
-        <p class="mb-8">Также кнопка "APPLY CHANGES" не будет активна, если не было произведено никаких изменений (состояние данных на сервере соответсвует текущему, отрисованному на карте).</p>
+        <p>If one of editing modes is selected (add, delete) then the rest of it won't be availble until the existing action is in progress!</p>
+        <p class="mb-8">If there were no changes (current data and server data states are equal), "APPLY CHANGES" button also won't be available.</p>
         <ol>
           <li class="mb-8">
             <h3 class="mb-2">Adding marker</h3>
-            <p>Нажмите кнопку "ACTIVATE ADD MODE".</p>
-            <p>Строка ввода данных "Address" и кнопка "SEARCH" станут активными. Также появится окно с выбором инструмента для рисования (левый нижний угол карты).</p>
-            <p>Выберите инструмент с иконкой маркера, при наведении на карту курсор поменяет свой вид на перекрестие. Левой конпкой мыши добавьте маркер на нужное место на карте. Кнопка "ADD MARKER станет активной.</p>
-            <p>Далее нажмите кнопку "ADD MARKER", чтобы применить изменения.</p>
-            <p>Добавлять маркеры можно также с помощью строки ввода данных "Address" - начните вводить нужный адрес, далее выберите подходящий з предложенного в выпадающем списке, либо нажмите кнопку "SEARCH" - на карте появится маркер, соответствующий введенному адресу. Кнопка "ADD MARKER станет активной.</p>
-            <p><b class="mb-5">После добавления маркера обязательно нажмите кнопку "ADD MARKER", и только потом переходите к добавлению следующего!</b></p>
-            <p>Для выхода из режима добавления нажмите кнопку "DEACTIVATE ADD MODE". После нажатия обратите внимание, что кнопка "APPLY CHANGES" стала доступна для нажатия</p>
+            <p>Click the "ACTIVATE ADD MODE" button.</p>
+            <p>The "Address" input field and "SEARCH" button will be actived. Also there will appear drawing tools panel (in the bottom left corner of the map).</p>
+            <p>Select the marker tool then, on map's hover cursor appearance will change to cross. Add a marker to the desired location on the map with the left mouse button. "ADD MARKER" button will be active too.</p>
+            <p>Click the "ADD MARKER" button to apply changes (to add marker).</p>
+            <p>You also can add markers by typing an address to the "Address" input field - just start entering the desired address, then select the appropriate address from the drop-down list, or click the "SEARCH" button, then the marker corresponding to the entered address will appear on the map.</p>
+            <p><b class="mb-5">After drawing marker (or applying by typing an adress) click the "ADD MARKER" button, and only then start to draw (type an adress) another one!</b></p>
+            <p>To exit adding mode click the "DEACTIVATE ADD MODE" button. Pay attention that "APPLY CHANGES" button is activated now.</p>
           </li>
           <li class="mb-8">
             <h3 class="mb-2">Deleting marker</h3>
-            <p>Нажмите кнопку "ACTIVATE DELETE MODE".</p>
-            <p>Нажамите на маркере который хотите удалить <b>правой кнопкой мыши</b>, выбранный маркер начнет прыгать.</p>
-            <p>После того как маркер выбран нажмите кнопку "DELETE MARKER", и выбранный маркер перестанет отображаться на карте.</p>
-            <p><b>Также обратите внимание</b>, что для удаления можно выбрать только один маркер одновременно.</p>
-            <p><b>После выбора маркера обязательно нажмите кнопку "DELETE MARKER", и только потом переходите к выбору следующего!</b></p>
-            <p>Для выхода из режима удаления нажмите кнопку "DEACTIVATE DELETE MODE". После нажатия обратите внимание, что кнопка "APPLY CHANGES" стала доступна для нажатия</p>
+            <p>Press the "ACTIVATE DELETE MODE" button.</p>
+            <p>Click the <b>right mouse button</b> on a marker that you want to delete - selected martker will be bouncing.</p>
+            <p>After the marker is selected click the "DELETE MARKER" button and selected marker will be deleted.</p>
+            <p><b>Also pay your attention</b> that you can select only one marker at a time.</p>
+            <p><b>When marker was selected it's nessesary to click the "DELETE MARKER" and only then select another one to delete!</b></p>
+            <p>To exit deleting mode click the "DEACTIVATE DELETE MODE" button. Pay attention that "APPLY CHANGES" button is activated now.</p>
           </li>
           <li class="mb-8">
             <h3 class="mb-2">Applying changes</h3>
-            <p>После того, как были сделаны все необходимые изменения, кнопка "APPLY CHANGES" станет доступной для нажатия.</p>
-            <p><b>Обратите внимание</b>, что кнопка "APPLY CHANGES" активна только в случае, когда не активны режимы редактирования и были внесены какие-то изменения в геометрию маркеров.</p>
-            <p><b>При нажатии "APPLY CHANGES" внесенные изменения будут отправленны на сервер</b></p>
-            <p>Процесс отправки данных занимает какое-то время, на время загрузки поле карты будет недоступно.</p>
-            <p>После успешной отправки данных будет снова отображена карта с актуальной версией маркеров с сервера.</p>
+            <p>After all the necessary changes have been made, the "APPLY CHANGES" button will be activated.</p>
+            <p><b>Pay your attention</b> if there is some editing modes actived (adding, deleting) the "APPLY CHANGES" button won't be active.</p>
+            <p><b>By clicking the "APPLY CHANGES" button you confirm and send new data to the server.</b></p>
+            <p>Sending data process can take some time, the map won't be available until sending finishes.</p>
+            <p>When data was successfully sent there will be displayed the map with all the changes than you just sent.</p>
           </li>
         </ol>
       </v-card-text>

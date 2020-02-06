@@ -1,29 +1,41 @@
-# dgtek-admins
+# DGTEK FRONTEND
 
 ## Project setup
-```
-npm install
+
+```bash
+yarn install
 ```
 
 ### Compiles and hot-reloads for development
-```
-npm run serve
+
+```bash
+yarn run serve
 ```
 
 ### Compiles and minifies for production
-```
-npm run build
+
+```bash
+yarn run build
 ```
 
-### Run your unit tests
-```
-npm run test:unit
+### Run your tests
+
+```bash
+yarn run test
 ```
 
 ### Lints and fixes files
+
+```bash
+yarn run lint
 ```
-npm run lint
+
+### Run your unit tests
+
+```bash
+yarn run test:unit
 ```
 
 ### Customize configuration
+
 See [Configuration Reference](https://cli.vuejs.org/config/).

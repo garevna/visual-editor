@@ -20,17 +20,13 @@
 
       <v-card flat class="pa-4 align-self-stretch d-flex flex-column justify-space-between" max-width="220px">
         <v-btn width="100%" class="mb-4" @click="dialog=true">Instruction</v-btn>
-        <!-- <v-btn width="100%" color="accent" :disabled="deleteActivated || checkApplyButton()" @click="applyChanges">Apply changes</v-btn> -->
-        <v-btn width="100%" color="accent" @click="applyChanges">Apply changes</v-btn>
+        <v-btn width="100%" color="accent" :disabled="deleteActivated || addActivated || checkApplyButton()" @click="applyChanges">Apply changes</v-btn>
+        <!-- <v-btn width="100%" color="accent" @click="applyChanges">Apply changes</v-btn> -->
       </v-card>
 
-      <v-card flat class="pa-4" max-width="220px">
+      <!-- <v-card flat class="pa-4" max-width="220px">
         <v-btn  width="100%" @click="showData">Show state data</v-btn>
-      </v-card>
-
-      <v-card flat class="pa-4" max-width="220px">
-        <v-btn  width="100%" @click="test">Test</v-btn>
-      </v-card>
+      </v-card>-->
 
     </v-row>
 
@@ -40,16 +36,11 @@
 </template>
 
 <script>
-/* eslint-disable no-unused-vars */
-/* eslint-disable no-console */
-
 import { mapGetters } from 'vuex'
 
 import mapConfigs from '@/configs/map'
 
 import InstructionForMarkers from '@/components/InstructionForMarkers.vue'
-
-const initialMarkers = require('../storage/markers.json')
 
 export default {
   components: {
@@ -87,18 +78,13 @@ export default {
   },
 
   methods: {
-    async test() {
-      console.log(this.stateMarkers)
-      this.$store.commit('map/MAP_POINTS', this.stateMarkers)
-      this.$store.dispatch('map/WRITE_POINTS')
-    },
 
-    showData() {
-      console.log('%c addingMarker: ', 'color: #1B5E20; font-weight: bold;', this.addingMarker)
-      console.log('%c stateMarkers: ', 'color: #FF6F00; font-weight: bold;', this.stateMarkers)
-      console.log('%c initialServerMarkers: ', 'color: #FF6F00; font-weight: bold;', this.initialServerMarkers)
-      console.log('%c states are equal: ', 'color: #FF6;', JSON.stringify(this.initialServerMarkers) === JSON.stringify(this.stateMarkers))
-    },
+    // showData() {
+    //   console.log('%c addingMarker: ', 'color: #1B5E20; font-weight: bold;', this.addingMarker)
+    //   console.log('%c stateMarkers: ', 'color: #FF6F00; font-weight: bold;', this.stateMarkers)
+    //   console.log('%c initialServerMarkers: ', 'color: #FF6F00; font-weight: bold;', this.initialServerMarkers)
+    //   console.log('%c states are equal: ', 'color: #FF6;', JSON.stringify(this.initialServerMarkers) === JSON.stringify(this.stateMarkers))
+    // },
 
     checkApplyButton() {
       return (JSON.stringify(this.stateMarkers) === JSON.stringify(this.initialServerMarkers))
@@ -135,7 +121,7 @@ export default {
         const address = e.feature.getProperty('address')
         const geo = e.feature.getGeometry()
         let coordinates
-        const paths = geo.forEachLatLng((elem) => { coordinates = [+elem.lat().toFixed(5), +elem.lng().toFixed(5)] })
+        geo.forEachLatLng((elem) => { coordinates = [+elem.lat().toFixed(5), +elem.lng().toFixed(5)] })
         this.stateMarkers[id] = { address, coordinates }
         this.initialServerMarkers[id] = { address, coordinates: [...coordinates] }
         const marker = new window.google.maps.Marker({
@@ -249,8 +235,6 @@ export default {
         this.searchInput.value = ''
         this.addingMarker = {}
         this.addingMarkerId = ''
-      } else {
-        console.warn('Nothing to add, please make sure that you added marker!')
       }
     },
 
@@ -290,8 +274,9 @@ export default {
       this.stateMarkers = {}
       this.initialServerMarkers = {}
 
-      await this.$store.dispatch('map/SAVE_POINTS', initialMarkers)
-      // await this.$store.dispatch('map/SAVE_POINTS', result)
+      await this.$store.commit('map/MAP_POINTS', result)
+      await this.$store.dispatch('map/WRITE_POINTS')
+
       this.initMap()
     },
   },
