@@ -8,7 +8,7 @@ ingress:
 uploadSize: 5M
 
 image:
-  repository: git.mbunity.dev:5500/dgtek/crm
+  repository: git.nitunity.io:5500/dgtek/crm
   pullPolicy: IfNotPresent
   name: crm
   port: 80
