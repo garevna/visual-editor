@@ -2,162 +2,153 @@
 /* eslint-disable no-undef */
 /* eslint-disable no-shadow */
 
+/* eslint-disable no-console */
+
 const state = {
-  blogContent: null,
-  contentChanged: false,
-  startTime: new Date().getTime(),
-  defaultPicture: 'default.jpg',
-  defaultAvatar: 'default.png',
+  articleFields: ['id', 'file', 'title', 'text', 'published_at', 'author', 'logo_user', 'logo', 'slug'],
 }
 
 const getters = {
+  hostEndpoint: (state, getters, rootState) => `${rootState.host}`,
   contentEndpoint: (state, getters, rootState) => `${rootState.host}/blog/content`,
-  imagesEndpoint: (state, getters, rootState) => `${rootState.host}/blog/images`,
+  articleEndpoint: (state, getters, rootState) => `${rootState.host}/blog/article`,
+  uploadPictureEndpoint: (state, getters, rootState) => `${rootState.host}/blog/picture`,
+  uploadAvatarEndpoint: (state, getters, rootState) => `${rootState.host}/blog/avatar`,
+  staticPictureEndpoint: (state, getters, rootState) => `${rootState.host}/images`,
+  staticAvatarEndpoint: (state, getters, rootState) => `${rootState.host}/avatars`,
+  picturesEndpoint: (state, getters, rootState) => `${rootState.host}/blog/images`,
   avatarsEndpoint: (state, getters, rootState) => `${rootState.host}/blog/avatars`,
-  pictureURL: (state, getters) => id => `${getters.imagesEndpoint}/${state.blogContent[id].picture || state.defaultPicture}`,
-  avatarURL: (state, getters) => id => `${getters.avatarsEndpoint}/${state.blogContent[id].author_ava || state.defaultAvatar}`,
-}
-
-const mutations = {
-
-  UPDATE_CONTENT: (state, content) => {
-    state.blogContent = JSON.parse(JSON.stringify(content))
-  },
-
+  imageSrc: (folderName, fileName) => (state, getters, rootState) => `${rootState.host}/${folderName}/${fileName}`,
 }
 
 const actions = {
 
-  async GET_ARTICLE_CONTENT({ getters, commit }, file) {
-    const result = await (await fetch(`${getters.contentEndpoint}/${file}`)).text()
+  async GET_BLOG_CONTENT({ getters, dispatch }) {
+    let blogContent = null
+    try {
+      const response = await (await fetch(getters.contentEndpoint)).json()
+      blogContent = response.data
+    } catch (error) { dispatch('LOG_ERROR', response) }
+
+    return blogContent
+  },
+
+  async GET_ARTICLE_BY_ID({ getters, dispatch }, id) {
+    if (!id) { return dispatch('LOG_ERROR', 'Article id required') }
+    try {
+      const article = await (await fetch(`${getters.articleEndpoint}/${id}`)).json()
+      return Object.assign(article, { pictureFile: null, avatarFile: null })
+    } catch (error) { return dispatch('LOG_ERROR', error) }
+  },
+
+  async SAVE_IMAGE(context, { imageName, imageFile, endpoint }) {
+    const formData = new FormData()
+    formData.set(imageName, imageFile)
+    try {
+      const response = await (await fetch(endpoint, {
+        method: 'POST',
+        body: formData,
+      })).text()
+      return response
+    } catch (error) {
+      dispatch('LOG_ERROR', error)
+      return null
+    }
+  },
+
+  async SAVE_ARTICLE_BY_ID({ getters, commit, dispatch }, { id, article }) {
+    const requestBody = Object.assign({}, ...state.articleFields.map(key => ({ [key]: article[key] })))
+    console.log('REQUEST BODY:\n', requestBody)
+
+    if (article.pictureFile) {
+      const response = await dispatch('SAVE_IMAGE', {
+        imageName: 'picture',
+        imageFile: article.pictureFile,
+        endpoint: getters.uploadPictureEndpoint,
+      })
+      commit('SET_PROPERTY', { object: requestBody, propertyName: 'logo', value: response }, { root: true })
+    }
+
+    if (article.avatarFile) {
+      const response = await dispatch('SAVE_IMAGE', {
+        imageName: 'avatar',
+        imageFile: article.avatarFile,
+        endpoint: getters.uploadAvatarEndpoint,
+      })
+      commit('SET_PROPERTY', { object: requestBody, propertyName: 'logo_user', value: response }, { root: true })
+    }
+
+    console.log('REQUEST BODY:\n', requestBody)
+
+    try {
+      const response = await fetch(`${getters.articleEndpoint}/${id}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(requestBody),
+      })
+      console.log(response)
+    } catch (error) { dispatch('LOG_ERROR', error) }
+  },
+
+  async CREATE_NEW_ARTICLE({ getters, dispatch }) {
+    try {
+      const response = await (await fetch(`${getters.articleEndpoint}/new`, { method: 'POST' })).json()
+      console.log(response)
+      return response
+    } catch (error) {
+      console.log(error)
+      dispatch('LOG_ERROR', error)
+      return null
+    }
+  },
+
+  async REMOVE_ARTICLE_BY_ID({ getters, commit, dispatch }, id) {
+    try {
+      const { status, message } = await fetch(`${getters.articleEndpoint}/${id}`, {
+        method: 'DELETE',
+      })
+      console.log(JSON.parse(message).data)
+      return JSON.parse(message).data
+    } catch (error) {
+      dispatch('LOG_ERROR', error)
+      return false
+    }
+  },
+
+  async GET_ALL_PICTURES({ getters, dispatch }) {
+    const pictures = await (await fetch(getters.picturesEndpoint)).json()
+    const result = pictures.filter(img => !(img.match(/default/) || img.match(/.gitkeep/)))
     return result
   },
 
-  async REMOVE_ARTICLE({
-    state,
-    getters,
-    commit,
-    dispatch,
-  }, id) {
-    /* eslint-disable camelcase */
-    const { file, picture, author_ava } = state.blogContent[id]
-
-    if (file) await dispatch('REMOVE_FILE', `${getters.contentEndpoint}/${file}`)
-    // if (picture) await dispatch('REMOVE_FILE', `${getters.imagesEndpoint}/${picture}`)
-    // if (author_ava) await dispatch('REMOVE_FILE', `${getters.avatarsEndpoint}/${author_ava}`)
-
-    commit('DELETE_PROPERTY', {
-      object: state.blogContent,
-      propertyName: id,
-    }, { root: true })
-
-    dispatch('SAVE_BLOG_CONTENT', state.blogContent)
-    return true
+  async GET_ALL_AVATARS({ getters, dispatch }) {
+    const pictures = await (await fetch(getters.avatarsEndpoint)).json()
+    const result = pictures.filter(img => !img.match(/.gitkeep/) && !img.match(/default/))
+    return result
   },
 
-  async REMOVE_FILE({ dispatch }, filePath) {
-    await dispatch(
-      'REMOVE_FILE',
-      {
-        moduleName: 'blog',
-        filePath,
-      },
-      { root: true },
-    )
+  async GET_IMAGES(context, endpoint) {
+    const pictures = await (await fetch(endpoint)).json()
+    const result = pictures.filter(img => !img.match(/.gitkeep/) && !img.match(/default/))
+    return result
   },
 
-  async GET_BLOG_CONTENT({
-    state,
-    getters,
-    commit,
-    dispatch,
-  }) {
-    const content = await (await fetch(getters.contentEndpoint)).json()
-    commit('UPDATE_CONTENT', content)
-    return state.blogContent
+  async REMOVE_IMAGE({ dispatch }, file) {
+    console.log(file)
+    const { status, result } = await fetch(file, { method: 'DELETE' })
+    console.log(status, result)
+    if (status !== 200) dispatch('LOG_ERROR', result)
+    return status === 200
   },
 
-  async SAVE_BLOG_CONTENT({
-    state,
-    getters,
-    commit,
-    dispatch,
-  }) {
-    await fetch(getters.contentEndpoint, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(state.blogContent),
-    }).catch(error => dispatch('TRACE_ERROR', error, { root: true }))
-
-    state.contentChanged = false
-    state.startTime = new Date().getTime()
-    return state.blogContent
-  },
-
-  async GET_ARTICLE_BY_ID({ state, dispatch }, id) {
-    if (!state.content) await dispatch('GET_CONTENT')
-    return state.blogContent[id]
-  },
-
-  async SAVE_ARTICLE_CONTENT({ getters, dispatch }, payload) {
-    if (!payload.content || typeof payload.content !== 'string') {
-      return dispatch('TRACE_ERRORS', 'Invalid article content', { root: true })
-    }
-    if (!payload.fileName) {
-      return dispatch('TRACE_ERRORS', 'Invalid article content file name', { root: true })
-    }
-    const ret = await fetch(`${getters.contentEndpoint}/${payload.fileName}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'text/html',
-      },
-      body: payload.content,
-    }).catch(err => dispatch('TRACE_ERRORS', err, { root: true }))
-    return ret
-  },
-
-  async SAVE_IMAGE({ dispatch }, payload) {
-    const fileName = `img${new Date().getTime()}.${payload.fileObject.type.split('/')[1]}`
-    const formData = new FormData()
-    formData.set('img', payload.fileObject)
-    let imagePath
-    try {
-      imagePath = await (
-        await fetch(`${payload.filePath}/${fileName}`, {
-          method: 'POST',
-          body: formData,
-        })
-      ).text()
-    } catch (err) {
-      dispatch('TRACE_ERROR', err, { root: true })
-      return null
-    }
-    return imagePath.split('/').slice(-1)[0]
-  },
-
-  async SAVE_PICTURE({ getters, dispatch }, file) {
-    const newPathToFile = await dispatch('SAVE_IMAGE', {
-      filePath: getters.imagesEndpoint,
-      fileObject: file,
-    })
-    return newPathToFile
-  },
-
-  async SAVE_AVATAR({ getters, dispatch }, file) {
-    const newPathToFile = await dispatch('SAVE_IMAGE', {
-      filePath: getters.avatarsEndpoint,
-      fileObject: file,
-    })
-    return newPathToFile
+  LOG_ERROR({ commit }, error) {
+    commit('ERROR_HANDLER', { moduleName: 'blog', error }, { root: true })
+    return null
   },
 }
 
 export default {
   namespaced: true,
-  state,
   getters,
   actions,
-  mutations,
 }

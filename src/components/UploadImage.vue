@@ -1,7 +1,7 @@
 <template>
-<v-card flat>
-  <v-card-text class="pl-10">
-    <v-file-input
+<!--<v-card flat class="ma-0 pa-0">
+  <v-card-text class="transparent" dark>-->
+    <v-file-input dark
           :label="label"
           prepend-icon="mdi-camera"
           @change="upload"
@@ -10,8 +10,8 @@
           :error="error"
     >
     </v-file-input>
-  </v-card-text>
-</v-card>
+<!--  </v-card-text>
+</v-card>-->
 </template>
 
 <script>
@@ -37,19 +37,10 @@ export default {
     async upload() {
       if (!this.img || this.error) return
       try {
-        const image = await this.readFile()
         this.$emit('update:file', this.img)
         this.$emit('update:source', 'client')
-        this.$emit('update:src', image)
+        this.$emit('update:src', URL.createObjectURL(this.img))
       } catch (error) { console.warn(error) }
-    },
-    readFile() {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader()
-        reader.onload = () => resolve(reader.result)
-        reader.onerror = () => reject(reader.error)
-        reader.readAsDataURL(this.img)
-      })
     },
     setHint() {
       if (this.source !== 'client') return ''

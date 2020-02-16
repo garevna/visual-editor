@@ -13,7 +13,7 @@ const routes = [
   {
     path: '/blog',
     name: 'blog',
-    component: () => import(/* webpackChunkName: "articles" */ '../views/Blog.vue'),
+    component: () => import(/* webpackChunkName: "blog" */ '../views/BlogCards.vue'),
   },
   {
     path: '/blog/:article',
@@ -23,12 +23,12 @@ const routes = [
   {
     path: '/blog/news',
     name: 'news',
-    component: () => import(/* webpackChunkName: "news" */ '../views/BlogNews.vue'),
+    component: () => import(/* webpackChunkName: "media" */ '../views/BlogNews.vue'),
   },
   {
     path: '/addresses',
     name: 'addresses',
-    component: () => import(/* webpackChunkName: "addresses" */ '../views/MapAddresses.vue'),
+    component: () => import(/* webpackChunkName: "markers" */ '../views/MapAddresses.vue'),
   },
   {
     path: '/polygons',

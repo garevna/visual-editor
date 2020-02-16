@@ -1,19 +1,20 @@
 <template>
-  <v-col cols="12" md="6" lg="4">
-    <v-card>
+  <v-col cols="12" md="6" lg="4" class="d-flex align-center">
+    <v-card hover width="100%">
       <v-img
         :src="picture"
         height="200"
-        contain
-        class="secondary"
+        cover
       ></v-img>
-      <v-card-title class="title">{{title}}</v-card-title>
+      <v-card-text max-width="80%" class="d-inline-block text-truncate">
+          {{title}}
+      </v-card-text>
 
       <v-card-actions>
-        <v-tooltip top>
+        <v-tooltip top color="info">
           <template v-slot:activator="{ on }">
-            <v-btn text @click="edit" v-on="on">
-              <v-icon large color="info">mdi-pencil</v-icon>
+            <v-btn icon @click="edit" v-on="on">
+              <v-icon color="info">mdi-pencil</v-icon>
             </v-btn>
           </template>
           <span>Edit article</span>
@@ -21,10 +22,10 @@
 
         <v-spacer/>
 
-        <v-tooltip top>
+        <v-tooltip top color="warning">
           <template v-slot:activator="{ on }">
-            <v-btn text @click="remove" v-on="on">
-              <v-icon large color="error">mdi-delete-circle</v-icon>
+            <v-btn icon @click="remove()" v-on="on">
+              <v-icon color="error">mdi-delete-circle</v-icon>
             </v-btn>
           </template>
           <span>Delete article</span>
@@ -36,14 +37,19 @@
 </template>
 
 <script>
+
+/* eslint-disable no-console */
+
 export default {
   props: ['id', 'selected', 'picture', 'title', 'operation'],
   methods: {
     edit() {
+      console.log('Edit post: ', this.id)
       this.$emit('update:selected', this.id)
       this.$emit('update:operation', 'edit')
     },
     remove() {
+      console.log('Remove')
       this.$emit('update:selected', this.id)
       this.$emit('update:operation', 'remove')
     },

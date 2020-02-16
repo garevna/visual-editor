@@ -6,9 +6,9 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    host: 'https://dgtek-server.glitch.me',
+    host: 'https://garevna-server.glitch.me',
     socket: 'wss://ws-with-routes.glitch.me',
-    mail: 'https://api.dgtek.net/mail',
+    mail: 'https://garevna-server.glitch.me',
     errorsLog: [],
     startTime: new Date().getTime(),
 
@@ -44,23 +44,19 @@ export default new Vuex.Store({
 
   actions: {
 
-    async REMOVE_FILE({ dispatch }, { moduleName, filePath }) {
+    async REMOVE_FILE({ commit }, { moduleName, filePath }) {
       if (!filePath) {
-        dispatch(
-          'TRACE_ERROR',
-          {
-            moduleName: 'blog',
-            error: `Error deleting the file: ${filePath}`,
-          },
-          { root: true },
-        )
+        commit('ERROR_HANDLER', {
+          moduleName,
+          error: `File to be deleted is not defined: ${filePath}`,
+        }, { root: true })
         return false
       }
       try {
         await fetch(filePath, { method: 'DELETE' })
         return true
       } catch (error) {
-        dispatch('TRACE_ERROR', { moduleName, error })
+        commit('ERROR_HANDLER', { moduleName, error })
         return false
       }
     },

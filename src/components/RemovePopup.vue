@@ -1,19 +1,21 @@
 <template>
   <v-row justify="center">
     <v-dialog v-model="visibility" persistent max-width="700">
-      <v-card class="pa-4">
-        <v-card-title class="error--text">
-          <v-icon large color="error">mdi-alert</v-icon>
-          Be careful with removing files from server
+      <v-card class="pa-8">
+        <v-card-title color="info">
+          <v-icon color="warning">mdi-alert</v-icon>
+          <h3>&nbsp;You attempt to remove file on server</h3>
         </v-card-title>
-        <v-card flat>
-          <v-card-text class="warning" v-if="removing" v-html="removing"></v-card-text>
+        <v-card flat class="pa-5">
+          <v-card-text color="info" v-if="removing" v-html="removing"></v-card-text>
+        </v-card>
+        <v-card flat class="pa-5">
           <v-card-text v-if="details" v-html="details"></v-card-text>
         </v-card>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="green darken-1" text @click="$emit('update:visibility', false)">Cancel</v-btn>
-          <v-btn color="red darken-1" text @click="confirmRemove()">Remove</v-btn>
+          <v-btn color="info" text @click="$emit('update:visibility', false)">Cancel</v-btn>
+          <v-btn color="error" text @click="confirmRemove()">Remove</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>

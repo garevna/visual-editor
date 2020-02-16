@@ -33,8 +33,8 @@ export default {
   data: () => ({
     route: '/',
     items: [
-      { text: 'Blog content', icon: 'mdi-file', route: 'blog' },
-      { text: 'Blog news', icon: 'mdi-newspaper', route: 'news' },
+      { text: 'Blog posts', icon: 'mdi-file', route: 'blog' },
+      { text: 'DGTek in media', icon: 'mdi-newspaper', route: 'news' },
       { text: 'Address list for map', icon: 'mdi-map-search', route: 'addresses' },
       { text: 'Polygons for map', icon: 'mdi-map-marker', route: 'polygons' },
       { text: 'FAQ', icon: 'mdi-frequently-asked-questions', route: 'faq' },

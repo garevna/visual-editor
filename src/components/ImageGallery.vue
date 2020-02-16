@@ -20,21 +20,20 @@
           :key="index"
           cols="12"
           :sm="sm"
+          :lg="lg"
         >
           <v-card hover class="pa-0" tile>
-          <v-fab-transition>
-            <v-btn fab icon @click="removePicture(index)">
-              <v-icon color="red darken-2">mdi-delete</v-icon>
-            </v-btn>
-          </v-fab-transition>
+            <v-fab-transition>
+              <v-btn fab icon @click="removePicture(index)">
+                <v-icon color="red darken-2">mdi-delete</v-icon>
+              </v-btn>
+            </v-fab-transition>
             <v-card-text>
-            <v-img :src="getPath(file)"
-                   :max-height="maxHeight"
-                   :max-width="maxWidth"
-                   contain
-                   v-model="img"
-                   @click="select(index)"
-            />
+              <v-img :src="`${staticEndpoint}/${file}`"
+                     max-height="300"
+                     v-model="img"
+                     @click="select(index)"
+              />
             </v-card-text>
           </v-card>
         </v-col>
@@ -51,19 +50,32 @@
 </template>
 
 <script>
+
 /* eslint-disable no-console */
+
+// import { mapGetters } from 'vuex'
 
 import RemovePopup from '@/components/RemovePopup.vue'
 
 export default {
   name: 'ImageGallery',
+
   components: {
     RemovePopup,
   },
+
   props: {
+    moduleName: {
+      type: String,
+      required: true,
+    },
     dialog: Boolean,
     image: String,
-    endpoint: {
+    staticEndpoint: {
+      type: String,
+      required: true,
+    },
+    removeEndpoint: {
       type: String,
       required: true,
     },
@@ -76,10 +88,12 @@ export default {
       default: 100,
     },
   },
+
   data: () => ({
     img: null,
     pictures: null,
-    sm: 4,
+    sm: 12,
+    lg: 6,
     removePopupVisible: false,
     confirmRemoving: false,
     details: null,
@@ -91,15 +105,12 @@ export default {
       console.log(val)
     },
     confirmRemoving(val) {
+      console.log(val)
+      console.log(this.removing)
+      console.log(this.pictures[this.removing])
       if (!val) return
-      try {
-        fetch(`${this.endpoint}/${this.pictures[this.removing]}`, {
-          method: 'DELETE',
-        }).then(() => { this.pictures.splice(this.removing, 1) })
-      } catch (error) {
-        const moduleName = this.endpoint.match('news') ? 'news' : 'blog'
-        this.$store.dispatch('TRACE_ERROR', { moduleName, error })
-      }
+      this.$store.dispatch(`${this.moduleName}/REMOVE_IMAGE`, `${this.removeEndpoint}/${this.pictures[this.removing]}`)
+        .then(result => (result && this.pictures.splice(this.removing, 1)))
       this.removePopupVisible = false
     },
   },
@@ -107,23 +118,22 @@ export default {
   methods: {
     select(index) {
       console.log(index)
-      this.$emit('update:image', this.pictures[index])
+      this.$emit('update:image', `${this.staticEndpoint}/${this.pictures[index]}`)
       this.$emit('update:dialog', false)
     },
     async getImages() {
-      const images = await (await fetch(this.endpoint)).json()
-      this.pictures = images.filter(img => img.match(/upload_/))
-    },
-    getPath(file) {
-      return `${this.endpoint}/${file}`
+      this.pictures = await this.$store
+        .dispatch(`${this.moduleName}/GET_IMAGES`, this.removeEndpoint)
+      console.log(this.pictures)
     },
     onResize() {
       this.sm = Math.round(32 / Math.round(window.innerWidth / this.maxWidth))
+      this.lg = Math.round(18 / Math.round(window.innerWidth / this.maxWidth))
     },
     removePicture(index) {
       this.confirmRemoving = false
       this.removing = index
-      this.details = `<img src="${this.endpoint}/${this.pictures[index]}" width="100"/>`
+      this.details = `<img src="${this.staticEndpoint}/${this.pictures[index]}" width="100"/>`
       this.removePopupVisible = true
     },
     selectPicture(index) {
@@ -132,7 +142,7 @@ export default {
     },
   },
   mounted() {
-    this.getImages()
+    this.getImages().then(() => console.log(this.pictures))
     this.sm = Math.round(32 / Math.round(window.innerWidth / this.maxWidth))
   },
 }
