@@ -51,10 +51,6 @@
 
 <script>
 
-/* eslint-disable no-console */
-
-// import { mapGetters } from 'vuex'
-
 import RemovePopup from '@/components/RemovePopup.vue'
 
 export default {
@@ -101,13 +97,7 @@ export default {
   }),
 
   watch: {
-    img(val) {
-      console.log(val)
-    },
     confirmRemoving(val) {
-      console.log(val)
-      console.log(this.removing)
-      console.log(this.pictures[this.removing])
       if (!val) return
       this.$store.dispatch(`${this.moduleName}/REMOVE_IMAGE`, `${this.removeEndpoint}/${this.pictures[this.removing]}`)
         .then(result => (result && this.pictures.splice(this.removing, 1)))
@@ -117,14 +107,12 @@ export default {
 
   methods: {
     select(index) {
-      console.log(index)
       this.$emit('update:image', `${this.staticEndpoint}/${this.pictures[index]}`)
       this.$emit('update:dialog', false)
     },
     async getImages() {
       this.pictures = await this.$store
         .dispatch(`${this.moduleName}/GET_IMAGES`, this.removeEndpoint)
-      console.log(this.pictures)
     },
     onResize() {
       this.sm = Math.round(32 / Math.round(window.innerWidth / this.maxWidth))
@@ -142,7 +130,7 @@ export default {
     },
   },
   mounted() {
-    this.getImages().then(() => console.log(this.pictures))
+    this.getImages()
     this.sm = Math.round(32 / Math.round(window.innerWidth / this.maxWidth))
   },
 }

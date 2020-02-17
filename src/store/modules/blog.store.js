@@ -2,8 +2,6 @@
 /* eslint-disable no-undef */
 /* eslint-disable no-shadow */
 
-/* eslint-disable no-console */
-
 const state = {
   articleFields: ['id', 'file', 'title', 'text', 'published_at', 'author', 'logo_user', 'logo', 'slug'],
 }
@@ -58,7 +56,6 @@ const actions = {
 
   async SAVE_ARTICLE_BY_ID({ getters, commit, dispatch }, { id, article }) {
     const requestBody = Object.assign({}, ...state.articleFields.map(key => ({ [key]: article[key] })))
-    console.log('REQUEST BODY:\n', requestBody)
 
     if (article.pictureFile) {
       const response = await dispatch('SAVE_IMAGE', {
@@ -78,25 +75,20 @@ const actions = {
       commit('SET_PROPERTY', { object: requestBody, propertyName: 'logo_user', value: response }, { root: true })
     }
 
-    console.log('REQUEST BODY:\n', requestBody)
-
     try {
       const response = await fetch(`${getters.articleEndpoint}/${id}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(requestBody),
       })
-      console.log(response)
     } catch (error) { dispatch('LOG_ERROR', error) }
   },
 
   async CREATE_NEW_ARTICLE({ getters, dispatch }) {
     try {
       const response = await (await fetch(`${getters.articleEndpoint}/new`, { method: 'POST' })).json()
-      console.log(response)
       return response
     } catch (error) {
-      console.log(error)
       dispatch('LOG_ERROR', error)
       return null
     }
@@ -107,7 +99,6 @@ const actions = {
       const { status, message } = await fetch(`${getters.articleEndpoint}/${id}`, {
         method: 'DELETE',
       })
-      console.log(JSON.parse(message).data)
       return JSON.parse(message).data
     } catch (error) {
       dispatch('LOG_ERROR', error)
@@ -134,9 +125,7 @@ const actions = {
   },
 
   async REMOVE_IMAGE({ dispatch }, file) {
-    console.log(file)
     const { status, result } = await fetch(file, { method: 'DELETE' })
-    console.log(status, result)
     if (status !== 200) dispatch('LOG_ERROR', result)
     return status === 200
   },

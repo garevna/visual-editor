@@ -62,8 +62,6 @@
 
 <script>
 
-/* eslint-disable no-console */
-
 import { mapGetters } from 'vuex'
 
 import ImageGallery from '@/components/ImageGallery.vue'
@@ -96,9 +94,6 @@ export default {
       this.$emit('update:avatarSrc', val)
       this.$emit('update:avatarDialog', false)
     },
-  },
-  mounted() {
-    // console.log(this.staticPictureEndpoint)
   },
 }
 </script>

@@ -2,9 +2,9 @@
   <v-col cols="12" md="6" lg="4" class="d-flex align-center">
     <v-card hover width="100%">
       <v-img
-        :src="picture"
-        height="200"
-        cover
+        :src="logo"
+        height="80"
+        contain
       ></v-img>
       <v-card-text max-width="80%" class="d-inline-block text-truncate">
           {{title}}
@@ -30,6 +30,7 @@
           </template>
           <span>Delete article</span>
         </v-tooltip>
+
       </v-card-actions>
     </v-card>
   </v-col>
@@ -38,7 +39,7 @@
 <script>
 
 export default {
-  props: ['id', 'selected', 'picture', 'title', 'operation'],
+  props: ['id', 'selected', 'logo', 'title', 'operation'],
   methods: {
     edit() {
       this.$emit('update:selected', this.id)

@@ -1,25 +1,18 @@
 <template>
   <v-app>
-    <v-app-bar app color="secondary" dark>
-      <div class="d-flex align-center">
-        <v-img
-          alt="DGTek Logo"
-          class="shrink mr-2"
-          contain
-          src="@/assets/logo.png"
-          transition="scale-transition"
-          width="50"
-        />
-
-        <v-btn @click="goHome" text>
-          <span class="mr-2">Admin</span>
-        </v-btn>
-      </div>
+    <v-app-bar app color="white" hide-on-scroll>
+      <v-toolbar-title>Visual editors</v-toolbar-title>
+        <v-card class="ml-10" flat>
+          <v-tabs v-model="tab">
+            <v-tab @click="blog()">Posts</v-tab>
+            <v-tab @click="news()">News</v-tab>
+          </v-tabs>
+        </v-card>
 
       <v-spacer></v-spacer>
 
-      <v-btn href="https://dgtek.net/" target="_blank" text>
-        <span class="mr-2">View result</span>
+      <v-btn :href="href" text>
+        <span class="mr-2">DKA PANEL</span>
         <v-icon>mdi-open-in-new</v-icon>
       </v-btn>
     </v-app-bar>
@@ -31,23 +24,44 @@
 </template>
 
 <script>
+
+// import BlogCards from './views/BlogCards.vue'
+// import BlogNews from './views/BlogNews.vue'
+
+/* eslint-disable no-console */
+
 export default {
   name: 'App',
 
-  components: {
-    //
+  data: () => ({
+    tab: 0,
+  }),
+  computed: {
+    route() {
+      console.log('ROUTE: ', this.$route.name)
+      return this.$route.name
+    },
+    href() {
+      if (this.route) {
+        const routeName = this.route === 'blog' || this.route === 'article' ? 'posts' : 'news'
+        return `https://dka.dgtek.net/${routeName}`
+      }
+      return 'https://dka.dgtek.net'
+    },
   },
 
-  data: () => ({
-    //
-  }),
   methods: {
-    goHome() {
-      this.$router.push({ path: '/' })
+    blog() {
+      if (this.route === 'blog') return
+      this.$router.push({ name: 'blog' })
+    },
+    news() {
+      if (this.route === 'news') return
+      this.$router.push({ name: 'news' })
     },
   },
   mounted() {
-    // this.$router.push({ path: 'home' })
+    this.$router.push({ path: 'blog' })
   },
 }
 </script>

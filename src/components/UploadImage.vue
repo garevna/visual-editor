@@ -15,7 +15,6 @@
 </template>
 
 <script>
-/* eslint-disable no-console */
 
 export default {
   props: {
@@ -36,11 +35,9 @@ export default {
   methods: {
     async upload() {
       if (!this.img || this.error) return
-      try {
-        this.$emit('update:file', this.img)
-        this.$emit('update:source', 'client')
-        this.$emit('update:src', URL.createObjectURL(this.img))
-      } catch (error) { console.warn(error) }
+      this.$emit('update:file', this.img)
+      this.$emit('update:source', 'client')
+      this.$emit('update:src', URL.createObjectURL(this.img))
     },
     setHint() {
       if (this.source !== 'client') return ''

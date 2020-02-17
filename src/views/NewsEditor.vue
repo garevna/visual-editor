@@ -1,169 +1,136 @@
 <template>
-  <v-container>
-    <v-card flat
-      class="mx-auto my-auto"
-      width="80%"
-      tile
-      v-if="!close && article"
-    >
-      <!-- actions -->
+  <v-sheet class="overflow-y-auto" style="margin-top: 300px">
+    <v-container fluid>
+        <v-card
+          class="mx-auto"
+          max-width="1000"
+          flat
+          tile
+          v-if="!close && article"
+        >
+          <v-card-title class="mx-auto">
+            <v-text-field outlined label="Article title" v-model="article.title">
+              <v-icon small slot="append" color="info">mdi-pencil</v-icon>
+            </v-text-field>
+          </v-card-title>
+          <v-card-title class="mx-auto">
+            <v-text-field outlined label="Article url" v-model="article.ref">
+              <v-icon small slot="append" color="info">mdi-pencil</v-icon>
+            </v-text-field>
+          </v-card-title>
+          <v-row class="mx-10">
+            <v-col cols="12" sm="6" md="4">
+              <v-dialog
+                ref="dialog"
+                v-model="modal"
+                :return-value.sync="date"
+                persistent
+                width="290px"
+              >
+                <template v-slot:activator="{ on }">
+                  <v-text-field
+                    v-model="date"
+                    label="Article date"
+                    prepend-icon="mdi-date-range"
+                    readonly
+                    v-on="on"
+                  ></v-text-field>
+                </template>
+                <v-date-picker v-model="date" scrollable>
+                  <v-spacer></v-spacer>
+                  <v-btn text color="primary" @click="modal = false">Cancel</v-btn>
+                  <v-btn text color="primary" @click="$refs.dialog.save(date)">OK</v-btn>
+                </v-date-picker>
+              </v-dialog>
+            </v-col>
 
-      <v-card-actions>
-        <v-tooltip top>
-          <template v-slot:activator="{ on }">
-            <v-btn text @click="saveArticle" v-on="on">
-              <v-icon large color="info">mdi-content-save</v-icon>
-            </v-btn>
-          </template>
-          <span>Save current article</span>
-        </v-tooltip>
+            <!--  Source -->
+            <v-col cols="12" sm="6" md="4" lg="4">
+              <v-card-text>
+                  <v-text-field outlined label="Source" v-model="article.source">
+                    <v-icon small slot="append" color="info">mdi-pencil</v-icon>
+                  </v-text-field>
+              </v-card-text>
+            </v-col>
+            <v-col cols="12" sm="4" md="2" lg="1" class="d-flex align-start">
+              <v-card-text>
+              <v-tooltip top color="info">
+                <template v-slot:activator="{ on }">
+                  <v-btn icon v-on="on" @click="$refs.logo.click()">
+                    <v-avatar color="#dde">
+                      <v-img v-if="article.logo" :src="article.logo" onerror="imageError"></v-img>
+                    </v-avatar>
+                  </v-btn>
+                  </template>
+                  <span>Change avatar via upload</span>
+              </v-tooltip>
+              </v-card-text>
+            </v-col>
+            <input
+              type="file"
+              ref="logo"
+              style="display: none"
+              @change="uploadLogo($event.target.files[0])"
+            >
+          </v-row>
+        </v-card>
 
-        <v-spacer/>
+        <NewsBottom
+            :save.sync="save"
+            :pictureSrc.sync="article.logo"
+            :avatarSrc.sync="article.logo_user"
+        />
 
-        <v-tooltip top>
-          <template v-slot:activator="{ on }">
-            <v-btn text @click="removeArticle" v-on="on">
-              <v-icon large color="error">mdi-delete-circle</v-icon>
-            </v-btn>
-          </template>
-          <span>Delete current article</span>
-        </v-tooltip>
-      </v-card-actions>
-      <v-divider/>
+        <ErrorPopup :visibility.sync="errorPopupVisible" :errorName="errorName" :details="errorStack"/>
 
-      <!-- header -->
-
-      <v-card-title>
-        <v-text-field label="News header" v-model="article.title">
-          <v-icon small slot="append" color="info">mdi-pencil</v-icon>
-        </v-text-field>
-      </v-card-title>
-
-      <v-card-text>
-        <v-text-field label="Article URL" v-model="article.ref">
-          <v-icon small slot="append" color="info">mdi-pencil</v-icon>
-        </v-text-field>
-      </v-card-text>
-
-      <!-- SOURCE -->
-
-      <v-card raized>
-        <v-row>
-          <v-col cols="6">
-            <v-card-text>
-              <v-text-field label="Article date" v-model="article.date">
-                <v-icon small slot="append" color="info">mdi-pencil</v-icon>
-              </v-text-field>
-            </v-card-text>
-          </v-col>
-          <v-col>
-            <v-card-text>
-              <v-text-field label="Article source" v-model="article.source">
-                <v-icon small slot="append" color="info">mdi-pencil</v-icon>
-              </v-text-field>
-            </v-card-text>
-          </v-col>
-        </v-row>
-        <v-card-text>
-          <v-img v-if="logoSrc" :src="logoSrc" max-height="150" max-width="300" contain></v-img>
-        </v-card-text>
-        <v-card-text class="pl-10">
-          <v-file-input
-            label="Upload logo"
-            prepend-icon="mdi-camera"
-            @change="uploadLogo"
-            v-model="logo.file"
-            :hint="uploadHint"
-            :error="error"
-          ></v-file-input>
-        </v-card-text>
-      </v-card>
-    </v-card>
-
-    <RemovePopup :visibility.sync="removePopupVisible"
-                 :confirm.sync="confirmRemoving"
-                 removing="Media article"
-                 :details="article.title"
-      />
-  </v-container>
+    </v-container>
+  </v-sheet>
 </template>
 
 <script>
 
-import RemovePopup from '@/components/RemovePopup.vue'
+import NewsBottom from '@/components/NewsBottom.vue'
+import ErrorPopup from '@/components/ErrorPopup.vue'
 
 export default {
-  components: {
-    RemovePopup,
-  },
 
-  props: {
-    id: {
-      type: String,
-      required: true,
-    },
-    logoFromServer: String,
+  components: {
+    NewsBottom,
+    ErrorPopup,
   },
 
   data: () => ({
-    logo: {
-      source: 'article',
-      file: null,
-      src: '',
-      limit: 100000,
-    },
+    id: null,
+    date: null,
+    modal: false,
+    article: null,
+    logoLimit: 70000,
     close: false,
-
+    save: false,
+    errorPopupVisible: false,
     removePopupVisible: false,
     confirmRemoving: false,
+    uploadDailog: false,
+    errorName: '',
+    errorStack: '',
   }),
-
-  computed: {
-    article() {
-      if (!this.id || !this.$store.state.news.news) return null
-      return this.$store.state.news.news[this.id]
-    },
-    logoEndpoint() {
-      return this.$store.getters['news/logosEndpoint']
-    },
-    logoSrc() {
-      if (this.logo.source === 'article' && this.article.logo) return `${this.logoEndpoint}/${this.article.logo}`
-      if (this.logo.source === 'client') return this.logo.src
-      if (this.logo.source === 'server') return `${this.logoEndpoint}/${this.logoFromServer}`
-      return ''
-    },
-    uploadHint() {
-      if (this.logo.source !== 'client') return ''
-      if (!this.logo.file || !(this.logo.file instanceof File)) return ''
-      if (this.logo.file.size > this.logo.limit) return 'File is too large'
-      if (!this.logo.file.type.match(/image/)) return 'Invalid file type'
-      return ''
-    },
-    error() { return Boolean(this.uploadHint) },
-  },
 
   watch: {
     id() {
       this.init()
     },
-    'logo.file': {
-      handler(newVal) {
-        if (!newVal) this.logo.src = ''
-        else this.logo.source = 'client'
-      },
-      deep: true,
+    date(val) {
+      this.article.published_at = val
     },
-    logoFromServer() {
-      this.logo.source = 'server'
+    save(val) {
+      if (!val) return
+      this.saveArticle()
+      this.save = false
     },
 
     confirmRemoving(val) {
       if (!val) return
-      this.$store.commit('DELETE_PROPERTY', {
-        object: this.$store.state.news.news,
-        propertyName: this.id,
-      })
-      this.$store.dispatch('news/SAVE_NEWS')
+      this.$store.dispatch('news/REMOVE_ARTICLE', this.id)
         .then(() => {
           this.removePopupVisible = false
           this.close = true
@@ -173,33 +140,39 @@ export default {
 
   methods: {
 
+    testFile(file, limit) {
+      if (!file.type.startsWith('image')) {
+        this.errorName = 'Invalid file type'
+        this.errorStack = 'File must be an image of any type such as: jpg, png, gif...'
+        this.errorPopupVisible = true
+        return false
+      }
+      if (file.size > limit) {
+        this.errorName = 'Invalid file size'
+        this.errorStack = `File is too large. Please select file up to ${Math.round(limit / 1000)}Kb`
+        this.errorPopupVisible = true
+        return false
+      }
+      return Boolean(file)
+    },
+
+    uploadLogo(file) {
+      if (!this.testFile(file, this.logoLimit)) return
+      this.article.logoFile = file
+      this.article.logo = URL.createObjectURL(file)
+    },
+
     async init() {
-      this.logo.file = null
-      this.logo.src = ''
-      this.logo.source = 'article'
-    },
-
-    async saveLogo() {
-      try {
-        return await this.$store.dispatch('news/SAVE_LOGO', this.logo.file)
-      } catch (err) { return '' }
-    },
-
-    uploadLogo() {
-      if (!this.logo.file || this.logo.error) return
-
-      const reader = new FileReader()
-      reader.onload = function s() {
-        this.logo.src = reader.result
-        this.logo.source = 'client'
-      }.bind(this)
-      reader.readAsDataURL(this.logo.file)
+      this.article = await this.$store.dispatch('news/GET_ARTICLE_BY_ID', this.id)
+      this.date = this.article.published_at
     },
 
     async saveArticle() {
-      if (this.logo.source === 'client') this.$set(this.article, 'logo', this.logo.file ? await this.saveLogo() : '')
-      if (this.logo.source === 'server') this.$set(this.article, 'logo', this.logoFromServer)
-      this.$store.dispatch('news/SAVE_NEWS')
+      await this.$store.dispatch('news/SAVE_ARTICLE_BY_ID', {
+        id: this.id,
+        article: this.article,
+      })
+      this.$router.push({ name: 'blog' })
     },
 
     async removeArticle() {
@@ -209,6 +182,7 @@ export default {
   },
 
   mounted() {
+    this.id = this.$route.params.article
     this.init()
   },
 }

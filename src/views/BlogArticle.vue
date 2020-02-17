@@ -43,7 +43,6 @@
       </template>
     </v-app-bar>
     <v-sheet
-      id="scrolling-techniques"
       class="overflow-y-auto"
       style="margin-top: 300px"
     >
@@ -99,7 +98,7 @@
               <v-tooltip top color="info">
                 <template v-slot:activator="{ on }">
                   <v-btn icon v-on="on" @click="$refs.avatar.click()">
-                    <v-avatar color="info">
+                    <v-avatar color="#dde">
                       <v-img v-if="article.logo_user" :src="article.logo_user" onerror="imageError"></v-img>
                     </v-avatar>
                   </v-btn>
@@ -119,7 +118,7 @@
         <v-card flat class="mx-auto" max-width="1000">
           <v-card-text v-if="!article.url">
               <v-icon color="info">mdi-file-document-outline</v-icon>
-              <v-card flat min-height="300">
+              <v-card flat min-height="350">
                 <VueEditor v-model="article.text" class="editor"/>
               </v-card>
           </v-card-text>
@@ -148,10 +147,15 @@
   .header-shadow {
     text-shadow: 0px 0px 8px #000;
   }
+  .ql-toolbar {
+    background: #ddd;
+  }
+  .ql-editor {
+    min-height: 300px!important;
+  }
 </style>
 
 <script>
-/* eslint-disable no-console */
 
 import { VueEditor } from 'vue2-editor'
 
@@ -241,7 +245,6 @@ export default {
     },
 
     async saveArticle() {
-      console.log('Save article...')
       await this.$store.dispatch('blog/SAVE_ARTICLE_BY_ID', {
         id: this.id,
         article: this.article,

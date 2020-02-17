@@ -15,7 +15,7 @@
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn color="info" text @click="$emit('update:visibility', false)">Cancel</v-btn>
-          <v-btn color="error" text @click="confirmRemove()">Remove</v-btn>
+          <v-btn color="error" text @click="confirmRemove">Remove</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -23,6 +23,7 @@
 </template>
 
 <script>
+
 export default {
   name: 'RemovePopup',
   props: {
@@ -37,6 +38,7 @@ export default {
       default: '',
     },
   },
+
   methods: {
     confirmRemove() {
       this.$emit('update:confirm', true)
