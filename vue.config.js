@@ -3,4 +3,7 @@ module.exports = {
     'vuetify',
   ],
   runtimeCompiler: true,
+  publicPath: process.env.NODE_ENV === 'production'
+    ? '/dgtek/'
+    : '/',
 }
