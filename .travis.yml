@@ -1,7 +1,6 @@
 deploy:
   provider: pages
   skip_cleanup: true
-  github_token: git: https://github.com/ on IRINA-PC at 22-май-2018 19:26
   keep_history: true
   on:
     branch: master
