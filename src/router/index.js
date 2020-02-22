@@ -1,6 +1,5 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-// import Home from '../views/Home.vue'
 
 Vue.use(VueRouter)
 
@@ -11,22 +10,22 @@ const routes = [
     component: () => import(/* webpackChunkName: "blog" */ '../views/BlogCards.vue'),
   },
   {
-    path: '/blog',
+    path: '/posts',
     name: 'blog',
     component: () => import(/* webpackChunkName: "blog" */ '../views/BlogCards.vue'),
   },
   {
-    path: '/blog/:article',
+    path: '/posts/:article',
     name: 'article',
     component: () => import(/* webpackChunkName: "article" */ '../views/BlogArticle.vue'),
   },
   {
-    path: '/blog/news',
+    path: '/dgtek-in-media',
     name: 'news',
     component: () => import(/* webpackChunkName: "media" */ '../views/BlogNews.vue'),
   },
   {
-    path: '/blog/news/:article',
+    path: '/dgtek-in-media/:article',
     name: 'newsArticle',
     component: () => import(/* webpackChunkName: "mediaArticle" */ '../views/NewsEditor.vue'),
   },
