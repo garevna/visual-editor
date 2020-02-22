@@ -25,11 +25,6 @@
 
 <script>
 
-// import BlogCards from './views/BlogCards.vue'
-// import BlogNews from './views/BlogNews.vue'
-
-/* eslint-disable no-console */
-
 export default {
   name: 'App',
 
@@ -38,13 +33,12 @@ export default {
   }),
   computed: {
     route() {
-      console.log('ROUTE: ', this.$route.name)
       return this.$route.name
     },
     href() {
       if (this.route) {
-        const routeName = this.route === 'blog' || this.route === 'article' ? 'posts' : 'news'
-        return `https://dka.dgtek.net/${routeName}`
+        const routePath = this.route.name === 'blog' || this.route.name === 'article' ? 'posts' : 'dgtek-in-media'
+        return `https://dka.dgtek.net/${routePath}`
       }
       return 'https://dka.dgtek.net'
     },
@@ -52,16 +46,16 @@ export default {
 
   methods: {
     blog() {
-      if (this.route === 'blog') return
+      if (this.route.name === 'blog') return
       this.$router.push({ name: 'blog' })
     },
     news() {
-      if (this.route === 'news') return
+      if (this.route.name === 'news') return
       this.$router.push({ name: 'news' })
     },
   },
   mounted() {
-    this.$router.push({ path: 'blog' })
+    this.$router.push({ name: 'blog' })
   },
 }
 </script>
