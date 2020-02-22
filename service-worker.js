@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/4.3.1/workbox-sw.js");
 
 importScripts(
-  "/dgtek/precache-manifest.8e601c730b044bb555a3b155e53aadef.js"
+  "/dgtek/precache-manifest.2f66e7759e3e367e96158140a0324aa2.js"
 );
 
 workbox.core.setCacheNameDetails({prefix: "dgtek-admins"});
