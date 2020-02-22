@@ -16,12 +16,12 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/dgtek/css/chunk-vendors.e5a05e7d.css"
   },
   {
-    "revision": "e2792c48c33389fbdd63b0f2d42cbf75",
+    "revision": "b5907f8f903471473dce7bf14c3dc12f",
     "url": "/dgtek/index.html"
   },
   {
-    "revision": "41b1bc49f55df1a50729",
-    "url": "/dgtek/js/app.29eb257b.js"
+    "revision": "59e690b9608f2c4e1e12",
+    "url": "/dgtek/js/app.c821f47c.js"
   },
   {
     "revision": "430b239543927d6c278e",
