@@ -1,3 +1,3 @@
 # VISUAL EDITOR FOR CRM
 
-[**DEMO**](https://garevna.github.io/dgtek/blog) 
+[**DEMO**](https://garevna.github.io/dgtek) 
